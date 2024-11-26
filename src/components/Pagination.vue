@@ -1,20 +1,33 @@
 <template>
-  <div class="pagination">
+  <div class="Zoho-pagination">
     <button 
       :disabled="currentPage === 1" 
       @click="goToPage(currentPage - 1)"
-       aria-label="Go to previous page"
+      aria-label="Go to previous page"
+      class="Zoho-pagination-button"
     >
-      Previous
+      <span class="Zoho-pagination-arrow">&laquo;</span>
     </button>
-    <span></span>
+
+    <button 
+      v-for="page in pageNumbers" 
+      :key="page"
+      :disabled="page === currentPage"
+      @click="goToPage(page)"
+      class="Zoho-pagination-button"
+      :class="{'active': page === currentPage}"
+      aria-label="Go to page {{ page }}"
+    >
+      {{ page }}
+    </button>
+
     <button 
       :disabled="currentPage === totalPages" 
       @click="goToPage(currentPage + 1)"
       aria-label="Go to next page"
-
+      class="Zoho-pagination-button"
     >
-      Next
+      <span class="Zoho-pagination-arrow">&raquo;</span>
     </button>
   </div>
 </template>
@@ -29,6 +42,13 @@ export default {
   computed: {
     totalPages() {
       return Math.ceil(this.totalItems / this.itemsPerPage);
+    },
+    pageNumbers() {
+      let numbers = [];
+      for (let i = 1; i <= this.totalPages; i++) {
+        numbers.push(i);
+      }
+      return numbers;
     }
   },
   methods: {
@@ -42,20 +62,35 @@ export default {
 </script>
 
 <style scoped>
-.pagination {
+.Zoho-pagination {
   display: flex;
   justify-content: right;
-  align-items: right;
-  gap: 5px;
-  margin-top: 20px;
-}
-button:disabled {
-  background-color: #f0f0f0;
-  cursor: not-allowed;
-}
-button{
-  background-color: #007bff;
-  border-radius: 10%;
+  gap: 0.5rem;
+  align-items: center;
 }
 
+.Zoho-pagination-button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 50px;
+  background-color: white;
+  color:  blue;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.Zoho-pagination-button.active {
+  background-color: blue;
+  color: white;
+}
+
+.Zoho-pagination-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.Zoho-pagination-arrow {
+  font-size: 1.25rem;
+}
 </style>

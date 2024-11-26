@@ -6,6 +6,8 @@ import Modal from './components/Modal.vue';
 import { debounce } from 'lodash';
 
 
+
+
 const routes = [
   {
     path: '/',

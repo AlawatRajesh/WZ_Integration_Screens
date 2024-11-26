@@ -1,49 +1,50 @@
 <template>
-  <table>
-    <thead>
-      <tr>
-        <th>Customer Name</th>
-            <th>Customer Type</th>
-            <th>Invoice No</th>
-            <th>Invoice Date</th>
-            <th>Is Updated Invoice</th>
-            <th>Status</th>
-            <th>Receipt View</th>
-            <th>Resync</th>
-      </tr>
-
-    </thead>
-    <tbody>
-      <tr v-if="customers.length === 0">
-        <td colspan="8" class="text-center">No customer details available</td>
-      </tr>
-      <tr v-for="customer in customers" :key="customer.id">
-        <td>{{ customer.name }}</td>
-            <td>{{ customer.type }}</td>
-            <td>{{ customer.invoiceno }}</td>
-            <td>{{ customer.date }}</td>
-            <td>{{ customer.update }}</td>
-            <td>{{ customer.status }}</td>
-        <td>
-          <button @click="viewCustomer(customer)" class="btn btn-primary">View</button>
-          </td>
-          <td> 
-          <button @click="syncCustomer()" class="btn btn-success">Sync</button>
-        </td>
-      </tr>
-      
-    </tbody>
+  <b-table :items="customers" :fields="fields" class="Zoho-table-striped">
     
+      <b-alert show variant="info" class="text-center">
+        No customer details available
+      </b-alert>
     
-  </table>
 
+    <template #cell(view)="row">
+      <b-button size="sm" variant="primary" @click="viewCustomer(row.item)">
+        View
+      </b-button>
+    </template>
+
+    <template #cell(sync)="row">
+      <b-button size="sm" variant="success" @click="syncCustomer(row.item)">
+        Sync
+      </b-button>
+    </template>
+  </b-table>
 </template>
 
 <script>
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { BTable, BButton, BAlert } from 'bootstrap-vue-next';
+
 export default {
+  components: {
+    BTable,
+    BButton,
+    BAlert
+  },
   props: {
     customers: Array
+  },
+  data() {
+    return {
+      fields: [
+        { key: 'name', label: 'Customer Name' },
+        { key: 'type', label: 'Customer Type' },
+        { key: 'invoiceno', label: 'Invoice No' },
+        { key: 'date', label: 'Invoice Date' },
+        { key: 'update', label: 'Is Updated Invoice' },
+        { key: 'status', label: 'Status' },
+        { key: 'view', label: 'View' },
+        { key: 'sync', label: 'Sync' }
+      ]
+    };
   },
   methods: {
     viewCustomer(customer) {
@@ -56,11 +57,14 @@ export default {
 };
 </script>
 
+
+
 <style>
 table {
   width: 100%;
   margin-top: 10px;
   box-shadow: red;
+  border: 1px solid white;
 }
 
 th, td {
@@ -77,16 +81,13 @@ th {
   border-bottom: 1px solid rgba(0, 0, 0, 0.014); 
   
 }
-th,tr{
-  background-color: #007bff;
-  padding: 10px;
-  
-}
+
 
 
 table tbody tr:hover {
   background-color: #e9ecef;
   cursor: pointer;
+  
 }
 
 table thead, table tbody tr {
@@ -108,24 +109,24 @@ table tbody {
   max-height: 250px;  
   overflow-y: auto;
   
-  scrollbar-width: thin; /* For Firefox */
+  scrollbar-width: thin; 
 }
-* Webkit-based browsers */
+
 table tbody::-webkit-scrollbar {
-  width: 6px; /* Control scrollbar width */
+  width: 6px; 
 }
 
 table tbody::-webkit-scrollbar-track {
-  background-color: #f1f1f1; /* Track background */
+  background-color: #f1f1f1; 
 }
 
 table tbody::-webkit-scrollbar-thumb {
-  background-color: #888; /* Scrollbar color */
-  border-radius: 10px; /* Rounded corners */
+  background-color: #888; 
+  border-radius: 10px; 
 }
 
 table tbody::-webkit-scrollbar-thumb:hover {
-  background-color: #555; /* Darker color on hover */
+  background-color: #555; 
 }
 
 

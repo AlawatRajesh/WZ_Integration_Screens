@@ -1,56 +1,57 @@
 <template>
-  <div id="app" class="container">
+  <div id="app" class="Zoho-container">
     <div class="text-right">
-      <a href="/steps.html" class="btn btn-link">Important Steps To Follow</a>
+      <b-button href="/steps.html" variant="link">Important Steps To Follow</b-button>
     </div>
-    <!-- Workshop Selection -->
-    <div class="filters-container">
-      <select v-model="selectedWorkshopId" @change="filterCustomers" class="workshop-dropdown">
+    
+    <div class="Zoho-filters-container">
+      <b-form-select v-model="selectedWorkshopId" @change="filterCustomers" class="Zoho-workshop-dropdown">
         <option value="">Select Workshop</option>
         <option v-for="workshop in workshops" :key="workshop.id" :value="workshop.id">
           {{ workshop.name }}
         </option>
-      </select>
-      <div v-if="selectedWorkshopId" class="customer-count">
+      </b-form-select>
+      
+      <div v-if="selectedWorkshopId" class="Zoho-customer-count">
         <p>Customer Count: {{ customerCount }}</p>
       </div>
-      <!-- Customer Search and Date Filter Section (only show when a workshop is selected) -->
-      <div v-if="selectedWorkshopId" class="filter-controls">
-        <input 
-          type="text" 
+      
+      <div v-if="selectedWorkshopId" class="Zoho-filter-controls">
+        <b-form-input 
           v-model="searchQuery" 
           placeholder="Search customers by name" 
           @input="debouncedFilterCustomers" 
-          class="search-bar"
+          class="Zoho-search-bar"
         />
-        <select v-model="dateFilter" @change="filterCustomers" class="date-filter-dropdown">
+        <b-form-select v-model="dateFilter" @change="filterCustomers" class="Zoho-date-filter-dropdown">
           <option value="all">All</option>
           <option value="today">Today</option>
           <option value="yesterday">Yesterday</option>
           <option value="this_week">This Week</option>
           <option value="this_month">This Month</option>
-        </select>
+        </b-form-select>
       </div>
     </div>
+
     <div v-if="selectedWorkshopId">
       <h3 class="hello mb-3">Failed Invoice Details for {{ getWorkshopName(selectedWorkshopId) }}:</h3>
     </div>
-    <!-- Customer Table (Visible only when a workshop is selected) -->
+    
     <div v-if="selectedWorkshopId">
       <table-component 
         :customers="pagedCustomers" 
         @view-customer="onViewCustomer" 
         @sync-customer="onSyncCustomer"
       />
-      <!-- Pagination for Customers -->
+   
       <pagination 
         :total-items="filteredCustomers.length"
         :items-per-page="itemsPerPage"
         :current-page="customerCurrentPage"
         @page-changed="onCustomerPageChanged"
-      />
+      /> 
     </div>
-    <!-- Modal for Customer Details & Receipt History -->
+  
     <modal-component 
       v-if="showModal" 
       :customer="selectedCustomer" 
@@ -59,12 +60,13 @@
     />
   </div>
 </template>
-<!-- ttest -->
+
 <script>
-import TableComponent from './Table.vue'
-import ModalComponent from './Modal.vue'
-import Pagination from './Pagination.vue'
+import { ref, computed } from 'vue';
 import { debounce } from 'lodash';
+import TableComponent from './Table.vue';
+import ModalComponent from './Modal.vue';
+import Pagination from './Pagination.vue';
 
 export default {
   components: {
@@ -72,18 +74,18 @@ export default {
     ModalComponent,
     Pagination
   },
-  data() {
-    return {
-      workshops: [
-        { id: 1, name: 'RR Workshop' },
-        { id: 2, name: 'SS Workshop' },
-        { id: 3, name: 'MR Workshop' },
-        { id: 4, name: 'RM Workshop' },
-        { id: 5, name: 'NN Workshop' },
-        { id: 6, name: 'SR Workshop' },
-      ],
-      customers: [
-        { id: 1, name: 'Ram',workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-11-25', update: 'Paid', status: 'active', 
+  setup() {
+    const workshops = ref([
+      { id: 1, name: 'RR Workshop' },
+      { id: 2, name: 'SS Workshop' },
+      { id: 3, name: 'MR Workshop' },
+      { id: 4, name: 'RM Workshop' },
+      { id: 5, name: 'NN Workshop' },
+      { id: 6, name: 'SR Workshop' },
+    ]);
+    
+    const customers = ref([
+    { id: 1, name: 'Ram',workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-11-25', update: 'Paid', status: 'active', 
         receipts:[{ receiptId: 'R001', date: '2024-11-10',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R002', date: '2024-11-15',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R003', date: '2024-11-16',message: 'Payment successful', status: 'success' },
@@ -98,7 +100,7 @@ export default {
                   { receiptId: 'R0012',date: '2024-11-25',message: 'Payment successful', status: 'success' },
                   
                ]},
-                {Id:2,name:'praveen',workshopId: 1,type:'Business',invoiceno:'1234',date:'2024-11-24',update:'Paid',status:'active',
+                {id:2,name:'praveen',workshopId: 1,type:'Business',invoiceno:'1234',date:'2024-11-24',update:'Paid',status:'active',
                 receipts: [{ receiptId: 'R001', date: '2024-11-10', message: 'Failed due to incorrect details', status: 'failed' }]},
                 {id:3,name:'nithin',workshopId: 1,type:'Individual',invoiceno:'1235',date:'2024-11-25',update:'Paid',status:'active',receipts:[]},
                 {id:4,name:'viraj',workshopId: 1,type:'Individual',invoiceno:'1236',date:'2024-11-21',update:'Paid',status:'active',receipts:[]},
@@ -112,69 +114,69 @@ export default {
                 {id:12,name:'dinesh',workshopId: 1,type:'Individual',invoiceno:'1244',date:'2024-11-19',update:'Paid',status:'active',receipts:[]},
                 {id:13,name:'surya',workshopId: 1,type:'Individual',invoiceno:'1245',date:'2024-11-18',update:'Paid',status:'active',receipts:[]},
                 {id:1,name:'ravi',workshopId:2,type:'Individual',invoiceno:'1221',date:'2024-11-22',update:'Paid',status:'active',receipts:[]}
-      ],
-      selectedWorkshopId: '',
-      searchQuery: '',
-      dateFilter: 'all',
-      selectedCustomer: null,
-      showModal: false,
-      itemsPerPage: 10,
-      customerCurrentPage: 1
-    };
-  },
-  computed: {
-    pagedCustomers() {
-      const start = (this.customerCurrentPage - 1) * this.itemsPerPage;
-      return this.filteredCustomers.slice(start, start + this.itemsPerPage);
-    },
-    filteredCustomers() {
-      let filtered = this.customers
-        .filter(customer =>
-          (!this.selectedWorkshopId || customer.workshopId === Number(this.selectedWorkshopId)) &&
-          (!this.searchQuery || customer.name.toLowerCase().includes(this.searchQuery.toLowerCase())) &&
-          this.applyDateFilter(customer.date)
-        );
-        return filtered
-    .sort((a, b) => {
-      const dateSort = new Date(b.date) - new Date(a.date);
-      if (dateSort !== 0) return dateSort;
-      return a.invoiceno.localeCompare(b.invoiceno);
+
+    ]);
+
+    const selectedWorkshopId = ref('');
+    const searchQuery = ref('');
+    const dateFilter = ref('all');
+    const selectedCustomer = ref(true);
+    const showModal = ref(false);
+    const itemsPerPage = ref(10);
+    const customerCurrentPage = ref(1);
+
+    const filteredCustomers = computed(() => {
+      let filtered = customers.value.filter(customer =>
+        (!selectedWorkshopId.value || customer.workshopId === Number(selectedWorkshopId.value)) &&
+        (!searchQuery.value || customer.name.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
+        applyDateFilter(customer.date)
+      );
+      
+      return filtered.sort((a, b) => {
+        const dateSort = new Date(b.date) - new Date(a.date);
+        if (dateSort !== 0) return dateSort;
+        return a.invoiceno.localeCompare(b.invoiceno);
+      });
     });
-},
-    customerCount() {
-      return this.filteredCustomers.length;
-    }
-  },
-  methods: {
-    debouncedFilterCustomers: debounce(function() {
-      this.filterCustomers();
-    }, 300), 
-    getWorkshopName(workshopId) {
-      return this.workshops.find(workshop => workshop.id === Number(workshopId))?.name || 'Unknown';
-    },
-    onCustomerPageChanged(newPage) {
-      this.customerCurrentPage = newPage;
-    },
-    onViewCustomer(customer) {
-      this.selectedCustomer = customer;
-      this.showModal = true;
-    },
-    onSyncCustomer() {
-      console.log('Syncing customer', );
-      this.selectedCustomer = null;
-      this.showModal = true;
-    },
-    closeModal() {
-      this.showModal = false;
-      this.selectedCustomer = null;
-    },
-    handleOutsideClick() {
-      this.closeModal();
-    },
-    applyDateFilter(date) {
+
+    const customerCount = computed(() => filteredCustomers.value.length);
+
+    const pagedCustomers = computed(() => {
+      const start = (customerCurrentPage.value - 1) * itemsPerPage.value;
+      return filteredCustomers.value.slice(start, start + itemsPerPage.value);
+    });
+
+    const debouncedFilterCustomers = debounce(function() {
+      filterCustomers();
+    }, 300);
+
+    const getWorkshopName = (workshopId) => {
+      return workshops.value.find(workshop => workshop.id === Number(workshopId))?.name || 'Unknown';
+    };
+
+    const onCustomerPageChanged = (newPage) => {
+      customerCurrentPage.value = newPage;
+    };
+
+    const onViewCustomer = (customer) => {
+      selectedCustomer.value = customer;
+      showModal.value = true;
+    };
+
+    const closeModal = () => {
+      showModal.value = false;
+      selectedCustomer.value = null;
+    };
+
+    const handleOutsideClick = () => {
+      closeModal();
+    };
+
+    const applyDateFilter = (date) => {
       const today = new Date();
       const customerDate = new Date(date);
-      switch (this.dateFilter) {
+
+      switch (dateFilter.value) {
         case 'today':
           return customerDate.toDateString() === today.toDateString();
         case 'yesterday':
@@ -190,14 +192,51 @@ export default {
         default:
           return true;
       }
+    };
+
+    return {
+      workshops,
+      customers,
+      selectedWorkshopId,
+      searchQuery,
+      dateFilter,
+      selectedCustomer,
+      showModal,
+      itemsPerPage,
+      customerCurrentPage,
+      filteredCustomers,
+      customerCount,
+      pagedCustomers,
+      debouncedFilterCustomers,
+      getWorkshopName,
+      onCustomerPageChanged,
+      onViewCustomer,
+      closeModal,
+      handleOutsideClick,
+      applyDateFilter
+    };
+  },
+  computed: {
+    filterCustomers() {
+      // Define your logic for filtering customers here
+      return this.customers.filter(customer => customer.active);
     }
-  }
+  },
+  methods: {
+    onSyncCustomer() {
+      // Define your logic for syncing customer data here
+      console.log('Syncing customer data...');
+    }
+  
+},
 };
 </script>
 
+
+
 <style scoped>
 
-.container {
+.Zoho-container {
   background-color: #fff;
   width: 90%;
   max-width: 3000px;
@@ -209,7 +248,7 @@ export default {
 }
 
 
-.filters-container {
+.Zoho-filters-container {
   display: flex;
   align-items: center;
   gap: 20px;
@@ -217,7 +256,7 @@ export default {
 }
 
 
-.workshop-dropdown {
+.Zoho-workshop-dropdown {
   padding: 8px 12px;
   font-size: 14px;
   border-radius: 4px;
@@ -227,73 +266,31 @@ button:hover {
   background-color: #0056b3;
   color: #fff;
 }
-.filter-controls {
+.Zoho-filter-controls {
   display: flex;
   align-items: left;
   gap: 15px;
   margin-left: 45%
 }
 
-.search-bar {
+.Zoho-search-bar {
   padding: 8px 12px;
   font-size: 14px;
   width: 250px;
   border-radius: 4px;
 }
 
-.date-filter-dropdown {
+.Zoho-date-filter-dropdown {
   padding: 8px 12px;
   font-size: 14px;
   border-radius: 4px;
 }
 
 
-.customer-count {
+.Zoho-customer-count {
   margin-top: 10px;
   font-size: 16px;
   font-weight: bold;
-}
-
-
-.pagination-controls {
-  display: flex;
-  justify-content: left;
-  margin-top: 20px;
-}
-
-.pagination-controls button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  margin: 0 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.pagination-controls button:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
-}
-
-.pagination-controls button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
 }
 
 .modal-content {
