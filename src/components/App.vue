@@ -85,7 +85,7 @@ export default {
     ]);
     
     const customers = ref([
-    { id: 1, name: 'Ram',workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-11-25', update: 'Paid', status: 'active', 
+    { id: 1, name: 'Ram',workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-11-27', update: 'Paid', status: 'active', 
         receipts:[{ receiptId: 'R001', date: '2024-11-10',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R002', date: '2024-11-15',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R003', date: '2024-11-16',message: 'Payment successful', status: 'success' },
@@ -100,10 +100,10 @@ export default {
                   { receiptId: 'R0012',date: '2024-11-25',message: 'Payment successful', status: 'success' },
                   
                ]},
-                {id:2,name:'praveen',workshopId: 1,type:'Business',invoiceno:'1234',date:'2024-11-24',update:'Paid',status:'active',
+                {id:2,name:'praveen',workshopId: 1,type:'Business',invoiceno:'1234',date:'2024-11-27',update:'Paid',status:'active',
                 receipts: [{ receiptId: 'R001', date: '2024-11-10', message: 'Failed due to incorrect details', status: 'failed' }]},
                 {id:3,name:'nithin',workshopId: 1,type:'Individual',invoiceno:'1235',date:'2024-11-25',update:'Paid',status:'active',receipts:[]},
-                {id:4,name:'viraj',workshopId: 1,type:'Individual',invoiceno:'1236',date:'2024-11-21',update:'Paid',status:'active',receipts:[]},
+                {id:4,name:'viraj',workshopId: 1,type:'Individual',invoiceno:'1236',date:'2024-11-26',update:'Paid',status:'active',receipts:[]},
                 {id:5,name:'vikas',workshopId: 1,type:'Individual',invoiceno:'1237',date:'2024-11-22',update:'Paid',status:'active',receipts:[]},
                 {id:6,name:'rajveer',workshopId: 1,type:'Individual',invoiceno:'1238',date:'2024-11-23',update:'Paid',status:'active',receipts:[]},
                 {id:7,name:'ali',workshopId: 1,type:'Individual',invoiceno:'1239',date:'2024-11-22',update:'Paid',status:'active',receipts:[]},
@@ -112,7 +112,7 @@ export default {
                 {id:10,name:'rakesh',workshopId: 1,type:'Individual',invoiceno:'1242',date:'2024-11-19',update:'Paid',status:'active',receipts:[]},
                 {id:11,name:'ramesh',workshopId: 1,type:'Individual',invoiceno:'1243',date:'2024-11-18',update:'Paid',status:'active',receipts:[]},
                 {id:12,name:'dinesh',workshopId: 1,type:'Individual',invoiceno:'1244',date:'2024-11-19',update:'Paid',status:'active',receipts:[]},
-                {id:13,name:'surya',workshopId: 1,type:'Individual',invoiceno:'1245',date:'2024-11-18',update:'Paid',status:'active',receipts:[]},
+                {id:13,name:'surya',workshopId: 1,type:'Individual',invoiceno:'1246',date:'2024-11-18',update:'Paid',status:'active',receipts:[]},
                 {id:1,name:'ravi',workshopId:2,type:'Individual',invoiceno:'1221',date:'2024-11-22',update:'Paid',status:'active',receipts:[]}
 
     ]);
@@ -169,6 +169,7 @@ export default {
     };
 
     const handleOutsideClick = () => {
+      selectedCustomer.value=null;
       closeModal();
     };
 
@@ -218,13 +219,11 @@ export default {
   },
   computed: {
     filterCustomers() {
-      // Define your logic for filtering customers here
       return this.customers.filter(customer => customer.active);
     }
   },
   methods: {
     onSyncCustomer() {
-      // Define your logic for syncing customer data here
       console.log('Syncing customer data...');
     }
   
@@ -232,10 +231,7 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
-
 .Zoho-container {
   background-color: #fff;
   width: 90%;
@@ -247,20 +243,18 @@ export default {
   user-select: none;
 }
 
-
 .Zoho-filters-container {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
   margin-bottom: 20px;
 }
-
 
 .Zoho-workshop-dropdown {
   padding: 8px 12px;
   font-size: 14px;
   border-radius: 4px;
-  width: 200px;
+  width: 250px;
 }
 button:hover {
   background-color: #0056b3;
@@ -269,43 +263,28 @@ button:hover {
 .Zoho-filter-controls {
   display: flex;
   align-items: left;
-  gap: 15px;
+  gap: 10px;
   margin-left: 45%
 }
 
 .Zoho-search-bar {
   padding: 8px 12px;
   font-size: 14px;
-  width: 250px;
+  width: 300px;
   border-radius: 4px;
 }
-
 .Zoho-date-filter-dropdown {
   padding: 8px 12px;
   font-size: 14px;
   border-radius: 4px;
 }
 
-
 .Zoho-customer-count {
+  width:280px;
   margin-top: 10px;
   font-size: 16px;
   font-weight: bold;
 }
 
-.modal-content {
-  background: white;
-  padding: 20px;
-  width: 500px;
-  border-radius: 8px;
-}
 
-.close-modal {
-  background-color: #ff4d4d;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-}
 </style>
