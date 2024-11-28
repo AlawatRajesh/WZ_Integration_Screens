@@ -1,12 +1,14 @@
 <template>
+  
   <b-modal
     :visible="isModalVisible"
     @update:visible="handleModalVisibility"
     aria-labelledby="modal-title"
      size="xl"
   >
+ 
     <h5 class="Zoho-modal-title" id="modal-title">Receipt History for {{ customer.name }}</h5>
-    <b-table :items="paginatedReceipts" :fields="fields" bordered hover>
+    <b-table :items="paginatedReceipts" :fields="fields" bordered hover class="Zoho-tables">
       <template v-slot:cell(resync)="data">
       <b-button 
         variant="success" 
@@ -16,7 +18,7 @@
       </template>
     </b-table>
     <div v-if="!customer.receipts || customer.receipts.length === 0">
-      <p>No receipts found for this customer.</p>
+      <p id="Zoho-receipt"> No receipts found for this customer.</p>
     </div>
     <Pagination
       v-if="customer && customer.receipts && customer.receipts.length > 0"
@@ -25,7 +27,9 @@
       :current-page="receiptCurrentPage"
       @page-changed="onReceiptPageChanged"
     />
+  
   </b-modal>
+  
 </template>
 
 <script>
@@ -42,9 +46,7 @@ export default {
   },
   data() {
     return {
-      isSyncing: false,
-      syncError: null,
-      syncSuccess: null,
+      
       fields: [
         { key: 'receiptId', label: 'Receipt No' },
         { key: 'date', label: 'Receipt Date' },
@@ -78,9 +80,13 @@ export default {
 </script>
 
 
-<style scoped>
-
+<style> 
+.Zoho-tables{
+  user-select: none;
+}
+#Zoho-receipt{
+  text-align: center;
+}
 </style>
-
 
 

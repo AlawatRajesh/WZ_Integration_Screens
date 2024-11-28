@@ -1,32 +1,3 @@
-
-// import { createApp } from 'vue';
-// import App from './components/App.vue';
-// import router from './router';
-// import Table from './components/Table.vue';
-// import Pagination from './components/Pagination.vue';
-// import Modal from './components/Modal.vue';
-// import { debounce } from 'lodash';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import { BootstrapVueNext } from 'bootstrap-vue-next';
-// import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
-
-
-
-
-// const app = createApp(App);
-// app.use(BootstrapVueNext);
-
-
-// app.use(router);
-
-
-// app.component('App',App)
-// app.component('Table', Table);
-// app.component('Pagination', Pagination);
-// app.component('Modal', Modal);
-
-// app.mount('#app');
-
 import { createApp } from 'vue';
 import App from './components/App.vue';
 import router from './router';

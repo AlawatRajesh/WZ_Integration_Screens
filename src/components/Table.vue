@@ -71,6 +71,7 @@ table thead, table tbody tr {
   table-layout: fixed; 
   text-align: center;   
 }
+
 table tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }

@@ -84,8 +84,7 @@ export default {
       { id: 6, name: 'SR Workshop' },
     ]);
     
-    const customers = ref([
-    { id: 1, name: 'Ram',workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-11-27', update: 'Paid', status: 'active', 
+    const customers = ref([ { id: 1, name: 'Ram',workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-11-27', update: 'Paid', status: 'active', 
         receipts:[{ receiptId: 'R001', date: '2024-11-10',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R002', date: '2024-11-15',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R003', date: '2024-11-16',message: 'Payment successful', status: 'success' },
@@ -97,7 +96,7 @@ export default {
                   { receiptId: 'R009', date: '2024-11-22',message: 'Payment successful', status: 'success' },
                   { receiptId: 'R0010',date: '2024-11-23',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R0011',date: '2024-11-24',message: 'Failed due to incorrect details', status: 'failed' },
-                  { receiptId: 'R0012',date: '2024-11-25',message: 'Payment successful', status: 'success' },
+                  { receiptId: 'R0012',date: '2024-11-28',message: 'Payment successful', status: 'success' },
                   
                ]},
                 {id:2,name:'praveen',workshopId: 1,type:'Business',invoiceno:'1234',date:'2024-11-27',update:'Paid',status:'active',
@@ -112,10 +111,9 @@ export default {
                 {id:10,name:'rakesh',workshopId: 1,type:'Individual',invoiceno:'1242',date:'2024-11-19',update:'Paid',status:'active',receipts:[]},
                 {id:11,name:'ramesh',workshopId: 1,type:'Individual',invoiceno:'1243',date:'2024-11-18',update:'Paid',status:'active',receipts:[]},
                 {id:12,name:'dinesh',workshopId: 1,type:'Individual',invoiceno:'1244',date:'2024-11-19',update:'Paid',status:'active',receipts:[]},
-                {id:13,name:'surya',workshopId: 1,type:'Individual',invoiceno:'1246',date:'2024-11-18',update:'Paid',status:'active',receipts:[]},
+                {id:13,name:'surya',workshopId: 1,type:'Individual',invoiceno:'1246',date:'2024-11-28',update:'Paid',status:'active',receipts:[]},
                 {id:1,name:'ravi',workshopId:2,type:'Individual',invoiceno:'1221',date:'2024-11-22',update:'Paid',status:'active',receipts:[]}
-
-    ]);
+ ]);
 
     const selectedWorkshopId = ref('');
     const searchQuery = ref('');
@@ -159,18 +157,22 @@ export default {
     };
 
     const onViewCustomer = (customer) => {
-      selectedCustomer.value = customer;
-      showModal.value = true;
+  if (showModal.value) {
+    closeModal(); 
+  } else {
+    selectedCustomer.value = customer;
+    showModal.value = true;  
+  }
+};
+    const toggleModal = () => {
+      showModal.value = !showModal.value;
     };
-
     const closeModal = () => {
       showModal.value = false;
       selectedCustomer.value = null;
     };
-
     const handleOutsideClick = () => {
-      selectedCustomer.value=null;
-      closeModal();
+      closeModal(); 
     };
 
     const applyDateFilter = (date) => {
@@ -212,6 +214,7 @@ export default {
       getWorkshopName,
       onCustomerPageChanged,
       onViewCustomer,
+      toggleModal,
       closeModal,
       handleOutsideClick,
       applyDateFilter
@@ -226,10 +229,10 @@ export default {
     onSyncCustomer() {
       console.log('Syncing customer data...');
     }
-  
-},
+  },
 };
 </script>
+
 
 <style scoped>
 .Zoho-container {
