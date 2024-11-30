@@ -1,3 +1,4 @@
+
 import { createApp } from 'vue';
 import App from './components/App.vue';
 import router from './router';
@@ -6,9 +7,10 @@ import Pagination from './components/Pagination.vue';
 import Modal from './components/Modal.vue';
 import { debounce } from 'lodash';
 import 'bootstrap/dist/css/bootstrap.min.css';
-//import BootstrapVue3 from 'bootstrap-vue-next';
+import Filters from './components/Filters.vue';
 
-// Import specific components from bootstrap-vue-next
+
+
 import { BModal, BButton, BTable, BPagination, BFormSelect, BFormInput, } from 'bootstrap-vue-next';
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';  // Correct BootstrapVueNext CSS import
 
@@ -27,6 +29,7 @@ app.component('BFormInput', BFormInput);
 app.component('Table', Table);
 app.component('Pagination', Pagination);
 app.component('Modal', Modal);
+app.component('Filters',Filters)
 
 // Use the router
 app.use(router);
