@@ -42,6 +42,7 @@
       @close="closeModal"
       @click-outside="handleOutsideClick" 
     />
+    <advanced-login-page-vue></advanced-login-page-vue>
   </div>
  
 </template>
@@ -53,13 +54,14 @@ import TableComponent from './Table.vue';
 import ModalComponent from './Modal.vue';
 import Pagination from './Pagination.vue';
 import Filters from './Filters.vue';
-
+import AdvancedLoginPageVue from './AdvancedLoginPage.vue';
 export default {
   components: {
     TableComponent,
     ModalComponent,
     Pagination,
-    Filters
+    Filters,
+    AdvancedLoginPageVue
   },
   setup() {
     const branches = ref([
