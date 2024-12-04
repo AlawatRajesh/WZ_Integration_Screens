@@ -90,6 +90,10 @@ export default {
     const workshops = ref([ 
       { id: 1, name: 'RR Workshop', branchId: 1 },
       { id: 2, name: 'SS Workshop', branchId: 1 },
+      { id: 3, name: 'AR Workshop', branchId: 1 },
+      { id: 4, name: 'SM Workshop', branchId: 1 },
+      { id: 5, name: 'RS Workshop', branchId: 1 },
+      { id: 2, name: 'SS Workshop', branchId: 1 },
       { id: 3, name: 'MR Workshop', branchId: 2 },
       { id: 4, name: 'RM Workshop', branchId: 2 },
       { id: 5, name: 'NN Workshop', branchId: 3 },
@@ -272,6 +276,7 @@ export default {
   }
 };
 </script>
+
 
 
 <style scoped>
