@@ -1,3 +1,4 @@
+
 <template>
   <div class="container mt-4">
     <div class="hh">
@@ -14,36 +15,22 @@
         <li><b>Reset Filters:</b> Clear any applied filters (search or date filters) to view the full customer list.</li>
         <li><b>Monitor Updates:</b> Regularly check for any data updates or changes in customer status.</li>
       </ol>
-      
-      
       <b-button @click="goBack" variant="primary" class="mt-4">Back</b-button>
     </div>
   </div>
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
-import { BButton} from 'bootstrap-vue-next';
-
-
 export default {
-  name: 'Steps',
-  components: {
-    BButton // Register BButton component
-  },
-  setup() {
-    const router = useRouter();
-
-    const goBack = () => {
-      router.push('/'); 
-    };
-    
-    return {
-      goBack
-    };
+  name: "Steps",
+  methods: {
+    goBack() {
+      this.$router.push('/'); // Navigate back to home page (or any other page)
+    }
   }
 };
 </script>
+
 
 <style scoped>
 .container {
@@ -98,4 +85,5 @@ button.mt-4 {
   margin-top: 20px;
 }
 </style>
+
 

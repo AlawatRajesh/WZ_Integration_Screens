@@ -1,9 +1,6 @@
 <template>
   <div id="app" class="Zoho-container">
     <div class="text-right" v-if="isLoggedIn"> 
-      <b-button variant="link"  @click="goToStepsPage"  v-if="!showSteps">
-        Important Steps To Follow
-      </b-button>
     <b-button size="sm" variant="primary" class="Zoho-Logout"   v-if="isLoggedIn" @click="logout"> Logout</b-button>
     </div>
     <div v-if="!isLoggedIn">
@@ -11,7 +8,7 @@
     </div>
     
     <div v-if="isLoggedIn">
-    <router-view></router-view>
+  
       <Filters 
         :branches="branches"
         :workshops="workshops"
@@ -65,9 +62,9 @@ import Pagination from './Pagination.vue';
 import { useRouter } from 'vue-router';
 import Filters from './Filters.vue';
 import AdvancedLoginPageVue from './AdvancedLoginPage.vue';
+import router from '../router';
 
 export default {
-  
   components: {
    
     AdvancedLoginPageVue,
@@ -75,6 +72,7 @@ export default {
     ModalComponent,
     Pagination,
     Filters,
+
     
   },
   setup() {
@@ -137,9 +135,11 @@ export default {
     const itemsPerPage = ref(10);
     const customerCurrentPage = ref(1);
     const router = useRouter();
-    const onLoginSuccess = () => {
-    isLoggedIn.value = true; 
-    router.push('/App'); 
+    const onLoginSuccess = () => { 
+  isLoggedIn.value = true;
+  router.push('/steps'); 
+    console.log(isLoggedIn.value);
+
     
      };
 
@@ -155,7 +155,9 @@ export default {
      
     };
     const goToStepsPage = () => {
-    router.push('/steps');  
+      console.log("Navigating to steps page...");
+      router.push('/steps');  // Try this if router.push('/steps') isn't working.
+  
    };
 
 
@@ -272,6 +274,7 @@ export default {
       logout,
       goToStepsPage,
       showSteps,
+      router,
     };
   }
 };
@@ -295,3 +298,5 @@ export default {
 
 
 </style>
+
+

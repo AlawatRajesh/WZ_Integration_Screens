@@ -7,15 +7,13 @@ import Modal from './components/Modal.vue';
 import { debounce } from 'lodash';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Filters from './components/Filters.vue';
-//import store from './components/store';  
-import { BModal, BButton, BTable, BPagination, BFormSelect, BFormInput } from 'bootstrap-vue-next';
-import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
+import { BModal, BButton, BTable, BPagination, BFormSelect, BFormInput, } from 'bootstrap-vue-next';
+import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';  // Correct BootstrapVueNext CSS import
 
-// Create the app
+
 const app = createApp(App);
 
-// Use the store
-//app.use(store);
+
 
 // Register BootstrapVueNext components globally
 app.component('BModal', BModal);
@@ -36,7 +34,7 @@ app.component('Filters', Filters);
 
 // Use the router
 app.use(router);
-app.use(axios);
+
 // Mount the app
 app.mount('#app');
 
