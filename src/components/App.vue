@@ -72,6 +72,10 @@ export default {
     const workshops = ref([
       { id: 1, name: 'RR Workshop', branchId: 1 },
       { id: 2, name: 'SS Workshop', branchId: 1 },
+      { id: 3, name: 'AR Workshop', branchId: 1 },
+      { id: 4, name: 'SM Workshop', branchId: 1 },
+      { id: 5, name: 'RS Workshop', branchId: 1 },
+      { id: 2, name: 'SS Workshop', branchId: 1 },
       { id: 3, name: 'MR Workshop', branchId: 2 },
       { id: 4, name: 'RM Workshop', branchId: 2 },
       { id: 5, name: 'NN Workshop', branchId: 3 },
@@ -79,7 +83,7 @@ export default {
     ]);
 
     const customers = ref([
-    { id: 1, name: 'Ram',branchId: 1,workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-11-29', update: 'Paid', status: 'active', 
+    { id: 1, name: 'Ram',branchId: 1,workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-12-02', update: 'Paid', status: 'active', 
         receipts:[{ receiptId: 'R001', date: '2024-11-10',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R002', date: '2024-11-15',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R003', date: '2024-11-16',message: 'Payment successful', status: 'success' },
@@ -231,6 +235,7 @@ export default {
   }
 };
 </script>
+
 
 
 <style scoped>

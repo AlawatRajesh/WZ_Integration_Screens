@@ -59,6 +59,7 @@ export default {
 
 
 
+
 <style>
 table tbody tr:hover {
   background-color: #e9ecef;

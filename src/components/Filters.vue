@@ -110,53 +110,57 @@
     }
   };
   </script>
-  <style scoped>
+  
+
+  
+  <style> 
   
 .Zoho-filters-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
     margin-bottom: 10px;
-  }
-  .Zoho-branch-dropdown{
+}
+.Zoho-branch-dropdown{
     max-width: 150px;
-  }
-  .Zoho-workshop-dropdown {
+}
+.Zoho-workshop-dropdown {
     padding: 8px 12px;
     font-size: 14px;
     border-radius: 4px;
-    max-width: 150px;
-  }
-  button:hover {
+    max-width: 170px;
+}
+button:hover {
     background-color: #0056b3;
     color: #fff;
   }
-  .Zoho-filter-controls {
+.Zoho-filter-controls {
     display: flex;
     align-items: left;
-    gap: 10px;
-    margin-left: 29%;
+    gap: 5px;
+    margin-left: 33%;
     max-width:400px
   }
   
-  .Zoho-search-bar {
+.Zoho-search-bar {
     padding: 8px 12px;
     font-size: 14px;
-    width: 200px;
+    width: 250px;
     border-radius: 4px;
   }
-  .Zoho-date-filter-dropdown {
+.Zoho-date-filter-dropdown {
     padding: 8px 12px;
-   width: 150px;
+   width: 50px;
     font-size: 14px;
     border-radius: 4px;
   }
   
-  .Zoho-customer-count {
+.Zoho-customer-count {
     width:180px;
     margin-top: 10px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
+   
   }
   
   
