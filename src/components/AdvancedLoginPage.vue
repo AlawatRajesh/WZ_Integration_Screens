@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="zoho-login-container">
     <div class="zoho-login-box">
       <div class="zoho-login-header">
@@ -67,8 +67,88 @@ export default {
   },
 },
 };
-</script>
+</script> -->
+<template>
+  <div class="zoho-login-container">
+    <div class="zoho-login-box">
+      <div class="zoho-login-header">
+        <h2>Welcome</h2>
+        <p>Please login to your account</p>
+      </div>
+      <form @submit.prevent="handleLogin">
+        <div class="zoho-form-group">
+          <label for="username">Username</label>
+          <div class="zoho-input-wrapper">
+            <i class="zoho-icon zoho-user-icon"></i>
+            <input
+              type="text"
+              id="username"
+              v-model="username"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
+        </div>
+        <div class="zoho-form-group">
+          <label for="token">Token</label>
+          <div class="zoho-input-wrapper">
+            <i class="zoho-icon zoho-token-icon"></i>
+            <input
+              type="password"
+              id="token"
+              v-model="token"
+              placeholder="Enter your token"
+              required
+            />
+          </div>
+        </div>
+        <button type="submit" class="zoho-btn-submit">Login</button>
+      </form>
+      <div class="zoho-login-footer">
+        <p>Forgot your token? <a href="#">Reset it here</a></p>
+        <p>Don't have an account? <a href="#">Sign up</a></p>
+      </div>
+    </div>
+  </div>
+</template>
 
+<script>
+export default {
+  name: "AdvancedLoginPageVue",
+  data() {
+    return {
+      username: '',
+      token: '',
+      validLogins: [] // Populating from environment variables
+    };
+  },
+  created() {
+    // Access environment variables using import.meta.env
+    this.validLogins = [
+      { username: import.meta.env.VITE_USERNAME_1, token: import.meta.env.VITE_TOKEN_1 },
+      { username: import.meta.env.VITE_USERNAME_2, token: import.meta.env.VITE_TOKEN_2 },
+      { username: import.meta.env.VITE_USERNAME_3, token: import.meta.env.VITE_TOKEN_3 }
+    ];
+
+    // Log to check if the environment variables are loaded correctly
+    console.log(import.meta.env); 
+  },
+  methods: {
+    handleLogin() {
+      const isValid = this.validLogins.some(
+        login => login.username === this.username && login.token === this.token
+      );
+
+      if (isValid) {
+        //alert("Login successful");
+        this.$emit('login-success');
+      } else {
+        alert("Invalid username or token");
+      }
+    }
+  }
+};
+</script>
 
 
 <style scoped>

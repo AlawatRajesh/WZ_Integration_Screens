@@ -10,12 +10,8 @@ import Filters from './components/Filters.vue';
 import { BModal, BButton, BTable, BPagination, BFormSelect, BFormInput, } from 'bootstrap-vue-next';
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';  // Correct BootstrapVueNext CSS import
 
-
 const app = createApp(App);
 
-
-
-// Register BootstrapVueNext components globally
 app.component('BModal', BModal);
 app.component('BButton', BButton);
 app.component('BTable', BTable);
@@ -23,14 +19,10 @@ app.component('BPagination', BPagination);
 app.component('BFormSelect', BFormSelect);
 app.component('BFormInput', BFormInput);
 
-// Register other components globally
 app.component('Table', Table);
 app.component('Pagination', Pagination);
 app.component('Modal', Modal);
 app.component('Filters', Filters);
-
-
-
 
 // Use the router
 app.use(router);
