@@ -1,4 +1,3 @@
-
 <template>
   <div class="zoho-login-container">
     <div class="zoho-login-box">
@@ -45,25 +44,32 @@
 
 <script>
 export default {
-  name: "LoginPage",
+  name: "AdvancedLoginPageVue",
   data() {
     return {
-      username: "",
-      token: "",
+      username: '',
+      token: '',
+      validLogins: [
+      { username: 'Rajesh', token: '123456' },
+      { username: 'Phenna', token: '67890' },
+      { username: 'Praveen', token: '54321' }
+    ]
     };
   },
   methods: {
     handleLogin() {
-      if (!this.username || !this.token) {
-        alert("Please fill in all fields");
-        return;
-      }
-      // Add login logic here
-      alert(`Logged in as ${this.username}`);
-    },
+    const isValid = this.validLogins.some(login => login.username === this.username && login.token === this.token);
+    if (isValid) {
+      this.$emit('login-success');
+    } else {
+      alert("Invalid username or token");
+    }
   },
+},
 };
 </script>
+
+
 
 <style scoped>
 /* Container styling */

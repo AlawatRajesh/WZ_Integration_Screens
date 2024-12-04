@@ -8,6 +8,8 @@ import Modal from './components/Modal.vue';
 import { debounce } from 'lodash';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Filters from './components/Filters.vue';
+import axios from 'axios';
+
 
 
 
@@ -31,8 +33,10 @@ app.component('Pagination', Pagination);
 app.component('Modal', Modal);
 app.component('Filters',Filters)
 
+
+
 // Use the router
 app.use(router);
-
+app.use(axios);
 // Mount the app
 app.mount('#app');

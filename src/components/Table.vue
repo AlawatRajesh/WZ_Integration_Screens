@@ -1,7 +1,7 @@
 <template>
   <b-table :items="customers" :fields="fields" class=" hovered table-bordered ">
     
-      <b-alert show variant="info" class="text-center">
+      <b-alert v-if="customers.length === 0" show variant="info" class="text-center">
         No customer details available
       </b-alert>
     

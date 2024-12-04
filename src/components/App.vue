@@ -1,26 +1,35 @@
 <template>
   <div id="app" class="Zoho-container">
-        <div class="text-right">
-      <b-button href="/steps.html" variant="link">Important Steps To Follow</b-button>
-   
-    <Filters 
-      :branches="branches"
-      :workshops="workshops"
-      :customers="customers"
-      :selectedBranchId="selectedBranchId"
-      :selectedWorkshopId="selectedWorkshopId"
-      :searchQuery="searchQuery"
-      :dateFilter="dateFilter"
-      @update:selectedBranchId="updateSelectedBranchId"
-      @update:selectedWorkshopId="updateSelectedWorkshopId"
-      @update:searchQuery="updateSearchQuery"
-      @update:dateFilter="updateDateFilter"
-    />
-  </div>
-    <div v-if="selectedWorkshopId">
+    <div class="text-right" v-if="isLoggedIn"> 
+      <b-button variant="link"  @click="goToStepsPage"  v-if="!showSteps">
+        Important Steps To Follow
+      </b-button>
+    <b-button size="sm" variant="primary" class="Zoho-Logout"   v-if="isLoggedIn" @click="logout"> Logout</b-button>
+    </div>
+    <div v-if="!isLoggedIn">
+      <advanced-login-page-vue @login-success="onLoginSuccess" />
+    </div>
+    
+    <div v-if="isLoggedIn">
+    <router-view></router-view>
+      <Filters 
+        :branches="branches"
+        :workshops="workshops"
+        :customers="customers"
+        :selectedBranchId="selectedBranchId"
+        :selectedWorkshopId="selectedWorkshopId"
+        :searchQuery="searchQuery"
+        :dateFilter="dateFilter"
+        @update:selectedBranchId="updateSelectedBranchId"
+        @update:selectedWorkshopId="updateSelectedWorkshopId"
+        @update:searchQuery="updateSearchQuery"
+        @update:dateFilter="updateDateFilter"
+      />
+    </div>
+    
+    <div v-if="isLoggedIn && selectedWorkshopId">
       <h3 class="hello mb-3">Failed Invoice Details for {{ getWorkshopName(selectedWorkshopId) }}:</h3>
     </div>
-
     <div v-if="selectedWorkshopId && filteredCustomers.length > 0">
       <table-component 
         :customers="pagedCustomers" 
@@ -32,8 +41,7 @@
         :items-per-page="itemsPerPage"
         :current-page="customerCurrentPage"
         @page-changed="onCustomerPageChanged"
-      />
-          
+      />    
     </div>
 
     <modal-component 
@@ -42,9 +50,10 @@
       @close="closeModal"
       @click-outside="handleOutsideClick" 
     />
-    <advanced-login-page-vue></advanced-login-page-vue>
-  </div>
+    
  
+  </div>
+  
 </template>
 
 <script>
@@ -53,35 +62,40 @@ import { debounce } from 'lodash';
 import TableComponent from './Table.vue';
 import ModalComponent from './Modal.vue';
 import Pagination from './Pagination.vue';
+import { useRouter } from 'vue-router';
 import Filters from './Filters.vue';
 import AdvancedLoginPageVue from './AdvancedLoginPage.vue';
+
 export default {
+  
   components: {
+   
+    AdvancedLoginPageVue,
     TableComponent,
     ModalComponent,
     Pagination,
     Filters,
-    AdvancedLoginPageVue
+    
   },
   setup() {
-    const branches = ref([
+    const isLoggedIn = ref(false); 
+    const showSteps = ref(false);
+
+    
+    const branches = ref([ 
       { id: 1, name: 'Branch A' },
       { id: 2, name: 'Branch B' },
       { id: 3, name: 'Branch C' },
-      { id: 4, name: 'Branch D' }
-    ]);
-
-    const workshops = ref([
+      { id: 4, name: 'Branch D' } ]);
+    const workshops = ref([ 
       { id: 1, name: 'RR Workshop', branchId: 1 },
       { id: 2, name: 'SS Workshop', branchId: 1 },
       { id: 3, name: 'MR Workshop', branchId: 2 },
       { id: 4, name: 'RM Workshop', branchId: 2 },
       { id: 5, name: 'NN Workshop', branchId: 3 },
-      { id: 6, name: 'SR Workshop', branchId: 4 }
-    ]);
-
+      { id: 6, name: 'SR Workshop', branchId: 4 } ]);
     const customers = ref([
-    { id: 1, name: 'Ram',branchId: 1,workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-11-29', update: 'Paid', status: 'active', 
+      { id: 1, name: 'Ram',branchId: 1,workshopId: 1, type: 'Individual', invoiceno: '1233', date: '2024-12-03', update: 'Paid', status: 'active', 
         receipts:[{ receiptId: 'R001', date: '2024-11-10',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R002', date: '2024-11-15',message: 'Failed due to incorrect details', status: 'failed' },
                   { receiptId: 'R003', date: '2024-11-16',message: 'Payment successful', status: 'success' },
@@ -109,9 +123,7 @@ export default {
                 {id:11,name:'ramesh',branchId: 1,workshopId: 1,type:'Individual',invoiceno:'1243',date:'2024-11-18',update:'Paid',status:'active',receipts:[]},
                 {id:12,name:'dinesh',branchId: 1,workshopId: 1,type:'Individual',invoiceno:'1244',date:'2024-11-19',update:'Paid',status:'active',receipts:[]},
                 {id:13,name:'surya',branchId: 1,workshopId: 1,type:'Individual',invoiceno:'1246',date:'2024-11-18',update:'Paid',status:'active',receipts:[]},
-                {id:1,name:'ravi',branchId: 1,workshopId:2,type:'Individual',invoiceno:'1221',date:'2024-11-22',update:'Paid',status:'active',receipts:[]}
-    ]);
-
+                {id:1,name:'ravi',branchId: 1,workshopId:2,type:'Individual',invoiceno:'1221',date:'2024-11-22',update:'Paid',status:'active',receipts:[]} ]);
     const selectedBranchId = ref('');
     const selectedWorkshopId = ref(0);
     const searchQuery = ref('');
@@ -120,12 +132,34 @@ export default {
     const showModal = ref(false);
     const itemsPerPage = ref(10);
     const customerCurrentPage = ref(1);
+    const router = useRouter();
+    const onLoginSuccess = () => {
+    isLoggedIn.value = true; 
+    router.push('/App'); 
+    
+     };
 
-   
+    const logout = () => {
+      isLoggedIn.value = false; 
+      selectedBranchId.value = ''; 
+      selectedWorkshopId.value = 0; 
+      searchQuery.value = ''; 
+      dateFilter.value = 'all';
+      selectedCustomer.value = null; 
+      showModal.value = false;
+      showSteps.value = false;
+     
+    };
+    const goToStepsPage = () => {
+    router.push('/steps');  
+   };
+
+
     const updateSelectedBranchId = (newBranchId) => {
       selectedBranchId.value = newBranchId;
-      selectedWorkshopId.value = 0; 
+      selectedWorkshopId.value = 0;
     };
+
     const updateSelectedWorkshopId = (newWorkshopId) => {
       selectedWorkshopId.value = newWorkshopId || 0;
     };
@@ -201,6 +235,7 @@ export default {
     };
 
     return {
+      isLoggedIn,
       branches,
       workshops,
       customers,
@@ -208,11 +243,12 @@ export default {
       selectedWorkshopId,
       searchQuery,
       dateFilter,
+      updateSelectedBranchId,
+      updateSelectedWorkshopId,
+      onLoginSuccess, 
       customerCount,
       filteredCustomers, 
       pagedCustomers,
-      updateSelectedBranchId,
-      updateSelectedWorkshopId,
       updateSearchQuery,
       updateDateFilter,
       getWorkshopName,
@@ -229,6 +265,9 @@ export default {
       itemsPerPage,
       customerCurrentPage,
       pagedCustomers,
+      logout,
+      goToStepsPage,
+      showSteps,
     };
   }
 };
@@ -247,5 +286,7 @@ export default {
   margin-top: 10px;
   user-select: none;
 }
+
+
 
 </style>

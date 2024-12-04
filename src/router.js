@@ -1,42 +1,40 @@
-import { createRouter, createWebHistory } from 'vue-router'; 
-import App from './components/App.vue';
-import Table from './components/Table.vue';
-import Pagination from './components/Pagination.vue';
-import Modal from './components/Modal.vue'; 
-import { debounce } from 'lodash';
-import Filters from './components/Filters.vue';
+// import { createRouter, createWebHistory } from 'vue-router';
 
+// import Steps from './components/Steps.vue';
+// import { componentNames } from 'bootstrap-vue-next';
+// const routes = [
+  
+//   {
+//     path: '/steps',
+//     name: 'steps',
+//     component: Steps,  // Steps component to show important steps
+//   },
+// ];
 
+// const router = createRouter({
+//   history: createWebHistory(import.meta.env.BASE_URL),
+//   routes,
+// });
+
+// export default router;
+import { createRouter, createWebHistory } from 'vue-router';
+import Steps from './components/Steps.vue';
 
 
 const routes = [
-  {
-    path: '/',
-    name: 'App',
-    component: App
-  },
-  {
-    path:'/branch/:id',
-    name:'Filters',
-    component:Filters
-  },
   
   {
-    path: '/workshop/:id', 
-    name: 'Table',
-    component: Table
+    path: '/steps',
+    name: 'steps',
+    component: Steps,  // This will render on the /steps page
   },
-  
-  {
-    path: '/customer/:view', 
-    name: 'CustomerModal',
-    component: Modal
-  }
 ];
 
 const router = createRouter({
-  history: createWebHistory(),  
-  routes  
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes,
 });
 
 export default router;
+
+
