@@ -119,18 +119,18 @@ export default {
     return {
       username: '',
       token: '',
-      validLogins: [] // Populating from environment variables
+      validLogins: [] 
     };
   },
   created() {
-    // Access environment variables using import.meta.env
+   
     this.validLogins = [
       { username: import.meta.env.VITE_USERNAME_1, token: import.meta.env.VITE_TOKEN_1 },
       { username: import.meta.env.VITE_USERNAME_2, token: import.meta.env.VITE_TOKEN_2 },
       { username: import.meta.env.VITE_USERNAME_3, token: import.meta.env.VITE_TOKEN_3 }
     ];
 
-    // Log to check if the environment variables are loaded correctly
+    
     console.log(import.meta.env); 
   },
   methods: {
@@ -140,7 +140,6 @@ export default {
       );
 
       if (isValid) {
-        //alert("Login successful");
         this.$emit('login-success');
       } else {
         alert("Invalid username or token");

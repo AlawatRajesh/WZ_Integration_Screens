@@ -25,7 +25,7 @@ export default {
   name: "Steps",
   methods: {
     goBack() {
-      this.$router.push('/'); // Navigate back to home page (or any other page)
+      this.$router.push('/'); 
     }
   }
 };

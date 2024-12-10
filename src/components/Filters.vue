@@ -1,6 +1,5 @@
-<template>
-    <div class="Zoho-filters-container">
-        
+ <template>
+    <div class="Zoho-filters-container"> 
       <b-form-select v-model="selectedBranchId"
        @change="onBranchChanged" 
        class="Zoho-branch-dropdown">
@@ -9,11 +8,10 @@
           {{ branch.name }}
         </option>
       </b-form-select>
-  
       <b-form-select v-model="selectedWorkshopId" v-if="selectedBranchId" @change="onWorkshopChanged" class="Zoho-workshop-dropdown">
         <option value="">Select Workshop</option>
-        <option v-for="workshop in filteredWorkshops" :key="workshop.id" :value="workshop.id">
-          {{ workshop.name }}
+        <option v-for="workshop in workshops" :key="workshop.id" :value="workshop.id">
+          {{ workshop.name }} 
         </option>
       </b-form-select>
   
@@ -39,8 +37,9 @@
     </div>
   </template>
   <script>
-  import { ref, computed } from 'vue';
+  import { ref, computed ,onMounted} from 'vue';
   import { debounce } from 'lodash';
+  import axios from 'axios';
   
   export default {
     props: {
@@ -60,20 +59,36 @@
       const dateFilter = ref(props.dateFilter);
   
       const filteredWorkshops = computed(() => {
-        return props.workshops.filter(workshop =>
-          !selectedBranchId.value || workshop.branchId === selectedBranchId.value
-        );
-      });
-  
-      const filteredCustomers = computed(() => {
-        return props.customers.filter(customer => {
-          return (
-            (!selectedWorkshopId.value || customer.workshopId === selectedWorkshopId.value) &&
-            (!searchQuery.value || customer.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+  if (!props.workshops) return [];  
+  return props.workshops.filter(workshop =>
+    !selectedBranchId.value || workshop.branchId === selectedBranchId.value
+  );
+});
+
+// const filteredCustomers = computed(() => {
+//   if (!props.customers) return [];  
+//   return props.customers.filter(customer => {
+//     return (
+//       (!selectedWorkshopId.value || customer.workshopId === selectedWorkshopId.value) &&
+//       //(!searchQuery.value || customer.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+//       customer.sequenceNumber.toString().includes(searchQuery.value)
             
-          );
-        });
-      });
+      
+
+//     );
+//   });
+// }); 
+const filteredCustomers = computed(() => {
+  if (!props.customers) return [];  
+  return props.customers.filter(customer => {
+    return (
+      (!selectedWorkshopId.value || customer.workshopId === selectedWorkshopId.value) &&
+      customer.ref_numbers.toString().includes(searchQuery.value)
+    );
+  });
+});
+
+
   
       const customerCount = computed(() => filteredCustomers.value.length);
   
@@ -93,7 +108,6 @@
       const filterCustomers = () => {
         emit('update:dateFilter', dateFilter.value);
       };
-  
       return {
         selectedBranchId,
         selectedWorkshopId,
@@ -109,12 +123,9 @@
       };
     }
   };
-  </script>
-  
+  </script> 
+  <style>
 
-  
-  <style> 
-  
 .Zoho-filters-container {
     display: flex;
     align-items: center;
