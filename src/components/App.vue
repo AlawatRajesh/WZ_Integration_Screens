@@ -1,7 +1,5 @@
 <template>
   <div id="app" class="Zoho-container">
-    <!-- <router-link to="/steps" style="float: right;">Go to Steps</router-link> -->
-    <!-- <router-view/> -->
   <div> 
       <Filters 
         :branches="branches" 
@@ -14,7 +12,8 @@
         @update:selectedBranchId="updateSelectedBranchId"
         @update:selectedWorkshopId="updateSelectedWorkshopId"
         @update:searchQuery="updateSearchQuery"
-        @update:dateFilter="updateDateFilter" />
+        @update:dateFilter="updateDateFilter" 
+        @workshop-selected="handleWorkshopSelected"/>
     </div>
     <div v-if="selectedWorkshopId">
       <h3 class="hello mb-3">Failed Invoice Details for {{ getWorkshopName(selectedWorkshopId) }}</h3>
@@ -109,7 +108,13 @@ export default {
         console.error('Error fetching workshops:', error);
       }
     };
-    
+    const handleWorkshopSelected = (workshopId) => {
+      selectedWorkshopId.value = workshopId;
+    };
+    onMounted(() => {
+      fetchWorkshops();
+    });
+
     const fetchCustomers = async () => {
       if (!selectedWorkshopId.value) {
         customers.value = [];
@@ -290,7 +295,7 @@ const onSyncCustomer = (customer) => {
       customerCurrentPage,
       toggleModal,
       customerCount,
-      
+      handleWorkshopSelected,
       
     };
   },
@@ -310,9 +315,6 @@ const onSyncCustomer = (customer) => {
   user-select: none;
 }
 
-
-
-
-
 </style>
+
 
