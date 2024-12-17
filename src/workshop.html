@@ -162,3 +162,39 @@
 </body>
 
 </html> -->
+
+
+<!-- import axios from 'axios';
+
+const onSyncCustomer = async (customer) => {
+  try {
+    const token = import.meta.env.VITE_API_BEARER_TOKEN;
+    if (!token) {
+      console.error('No token found in .env file');
+      return;
+    }
+
+    const response = await axios.post(import.meta.env.VITE_APP_API_SYNC, customer, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    console.log('Customer synced:', response.data);
+    // Handle the response and update the table state here if necessary
+
+  } catch (error) {
+    console.error('Error syncing customer:', error);
+  }
+};
+props: {
+  onSyncCustomer: {
+    type: Function,
+    required: true,
+  },
+},
+methods: {
+  onSyncCustomer(customer) {
+    this.$emit('sync-customer', customer);
+  }
+} -->

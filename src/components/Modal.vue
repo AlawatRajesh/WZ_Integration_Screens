@@ -1,112 +1,35 @@
-<!-- <template>
-  
-  <b-modal
-    :visible="isModalVisible"
-    @update:visible="handleModalVisibility"
-    aria-labelledby="modal-title"
-     size="xl"
-  >
- 
-    <h5 class="Zoho-modal-title" id="modal-title">Receipt History for {{ customer.name }}</h5>
-    <b-table :items="paginatedReceipts" :fields="fields" bordered hover class="Zoho-tables">
-      <template v-slot:cell(resync)="data">
-      <b-button 
-        variant="success" 
-        :disabled="false">  
-        Sync
-      </b-button>
-      </template>
-    </b-table>
-    <div v-if="!customer.receipts || customer.receipts.length === 0">
-      <p id="Zoho-receipt"> No receipts found for this customer.</p>
-    </div>
-    <Pagination
-      v-if="customer && customer.receipts && customer.receipts.length > 0"
-      :total-items="customer.receipts.length"
-      :items-per-page="itemsPerPage"
-      :current-page="receiptCurrentPage"
-      @page-changed="onReceiptPageChanged"
-    />
-  
-  </b-modal>
-  
-</template>
-
-<script>
-export default {
-  props: {
-    customer: {
-      type: Object,
-      required: true
-    },
-    isModalVisible: {
-      type: Boolean,
-      default: true
-    }
-  },
-  data() {
-    return {
-      
-      fields: [
-        { key: 'referenceNumber', label: 'Receipt No' },
-        { key: 'workshopId', label: 'Receipt Date' },
-        //{ key: 'message', label: 'Message' },
-        { key: 'status', label: 'Status' },
-        { key: 'resync', label: 'Resync' }
-      ],
-      itemsPerPage: 10, 
-      receiptCurrentPage: 1, 
-    };
-  },
-  computed: {
-    paginatedReceipts() {
-      const startIndex = (this.receiptCurrentPage - 1) * this.itemsPerPage;
-      const sortedReceipts = this.customer.receipts.sort((a, b) => new Date(b.date) - new Date(a.date));
-      return sortedReceipts.slice(startIndex, startIndex + this.itemsPerPage);
-    }
-  },
-  
-  methods: {
-    handleModalVisibility(val) {
-      this.$emit('update:isModalVisible', val);
-    },
-    onReceiptPageChanged(newPage) {
-      this.receiptCurrentPage = newPage;
-    },
-  
-  },
-  
-};
-</script> -->
-
 <template>
-  <b-modal
-    :visible="isModalVisible"
-    @update:visible="handleModalVisibility"
-    aria-labelledby="modal-title"
-    size="xl"
-  >
-    <h5 class="Zoho-modal-title" id="modal-title">Receipt History for {{ customer.name }}</h5>
+  <b-modal :visible="isModalVisible" @update:visible="handleModalVisibility" aria-labelledby="modal-title" size="xl">
+    <h5 class="Zoho-modal-title" id="modal-title">Receipt History for {{ customer.refNumber }}</h5>
+
+    <Alert v-if="errorMessage" :message="errorMessage" :type="'error'" :duration="1900" />
+
     <b-table :items="paginatedReceipts" :fields="fields" bordered hover class="Zoho-tables">
       <template v-slot:cell(resync)="data">
-        <b-button variant="success" :disabled="false">Sync</b-button>
+        <b-button variant="success" @click="syncReceipt(data.item)" :disabled="false">Sync</b-button>
       </template>
     </b-table>
-    <div v-if="!customer.receipts || customer.receipts.length === 0">
+
+    <div v-if="!receipts || receipts.length === 0">
       <p id="Zoho-receipt"> No receipts found for this customer.</p>
     </div>
-    <Pagination
-      v-if="customer && customer.receipts && customer.receipts.length > 0"
-      :total-items="customer.receipts.length"
-      :items-per-page="itemsPerPage"
-      :current-page="receiptCurrentPage"
-      @page-changed="onReceiptPageChanged"
-    />
+
+    <Pagination v-if="customer && receipts && receipts.length > 0"
+      :total-items="receipts.length" :items-per-page="itemsPerPage" :current-page="receiptCurrentPage"
+      @page-changed="onReceiptPageChanged" />
+     
   </b-modal>
 </template>
 
 <script>
+import { ref, computed } from 'vue'; 
+import axios from 'axios';
+import Alert from './Alert.vue'; 
+
 export default {
+  components: {
+    Alert
+  },
   props: {
     customer: {
       type: Object,
@@ -115,49 +38,97 @@ export default {
     isModalVisible: {
       type: Boolean,
       default: true
+    },
+    receipts: {
+      type: Array,
+      required: true
+    },
+    workshopId:{
+      type:String,
+      required:true,
+    },
+    receipt:{
+      type:Array,
+      required:true,
     }
   },
-  data() {
-    return {
-      fields: [
-        { key: 'referenceNumber', label: 'Receipt No' },
-        { key: 'workshopId', label: 'Receipt Date' },
-        { key: 'status', label: 'Status' },
-        { key: 'resync', label: 'Resync' }
-      ],
-      itemsPerPage: 10, 
-      receiptCurrentPage: 1, 
-    };
-  },
-  computed: {
-    paginatedReceipts() {
-      if (!this.customer.receipts || this.customer.receipts.length === 0) {
-        return []; 
+
+  setup(props, { emit }) {
+    const errorMessage = ref(null); 
+    const receiptCurrentPage = ref(1);
+    const itemsPerPage = ref(10);
+    
+    const fields = [
+      { key: 'receiptDate', label: 'Receipt Date' },
+      { key: 'message', label: 'Message' },
+      { key: 'receiptNumber', label: 'Receipt No' },
+      { key: 'resync', label: 'Resync' }
+    ];
+
+    const paginatedReceipts = computed(() => {
+      if (!props.receipts || props.receipts.length === 0) {
+        return [];
       }
 
-      const startIndex = (this.receiptCurrentPage - 1) * this.itemsPerPage;
-      return this.customer.receipts.slice(startIndex, startIndex + this.itemsPerPage);
-    }
-  },
-  methods: {
-    handleModalVisibility(val) {
-      this.$emit('update:isModalVisible', val);
-    },
-    onReceiptPageChanged(newPage) {
-      this.receiptCurrentPage = newPage;
-    },
-  },
+      const startIndex = (receiptCurrentPage.value - 1) * itemsPerPage.value;
+      return props.receipts.slice(startIndex, startIndex + itemsPerPage.value);
+    });
+
+    const handleModalVisibility = (val) => {
+      emit('update:isModalVisible', val);
+    };
+
+    const onReceiptPageChanged = (newPage) => {
+      receiptCurrentPage.value = newPage;
+    };
+
+    const syncReceipt = async (receipt) => {
+      try {
+        const token = import.meta.env.VITE_API_BEARER_TOKEN;
+        if (!token) {
+          console.error('No token found in .env file');
+          return;
+        }
+        const response = await axios.post(
+          `${import.meta.env.VITE_APP_API_SYNC_RECEIPTS}?referenceNumber=${receipt.receiptNumber}&workshopId=${props.customer.workshopId}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }}
+        ); 
+        console.log('Customer synced successfully:', response.data);
+        if (response.data.ERROR) {
+          errorMessage.value = `Sync failed!\n\nERROR: ${response.data.ERROR}`;
+        } else {
+          errorMessage.value = 'Sync successful!';
+        }
+      } catch (error) {
+        console.error('Error syncing customer:', error);
+        errorMessage.value = `Sync failed!\n\nERROR: ${error.message}`;
+      }
+    };
+
+    return {
+      errorMessage,
+      fields,
+      receiptCurrentPage,
+      itemsPerPage,
+      paginatedReceipts,
+      handleModalVisibility,
+      onReceiptPageChanged,
+      syncReceipt
+    };
+  }
 };
 </script>
 
 
-<style> 
-.Zoho-tables{
+<style>
+.Zoho-tables {
   user-select: none;
 }
-#Zoho-receipt{
+
+#Zoho-receipt {
   text-align: center;
 }
 </style>
-
-

@@ -1,69 +1,11 @@
-<!-- <template>
-  <div>
-    <b-table-simple v-if="customers && customers.length > 0" class="table table-bordered table-hover">
-        <b-thead>
-        <b-tr>
-          <b-th>S.No</b-th>
-          <b-th>Sequence Number</b-th>
-          <b-th>Invoice No</b-th>
-          <b-th>Created At</b-th>
-          <b-th>View</b-th>
-          <b-th>Sync</b-th>
-        </b-tr>
-      </b-thead>
-      <b-tbody>
-        <b-tr v-for="(customer, index) in customers" :key="customer.id">
-          <b-td>{{ customer.id }}</b-td>
-          <b-td>{{ customer.sequenceNumber }}</b-td>
-          <b-td>{{ customer.refNumber }}</b-td>
-          <b-td>{{ customer.createdAt }}</b-td>
-          <b-td>
-            <b-button size="sm" variant="primary" @click="viewCustomer(customer)">
-              View
-            </b-button>
-          </b-td>
-          <b-td>
-            <b-button size="sm" variant="success" @click="syncCustomer(customer)">
-              Sync
-            </b-button>
-          </b-td>
-        </b-tr>
-      </b-tbody>
-    </b-table-simple>
-    <b-alert v-if="customers.length === 0" show variant="info" class="text-center my-3">
-      No customer details available
-    </b-alert>
-  </div>
-</template>
-
-<script>
-import { BAlert } from 'bootstrap-vue-next';
-
-
-export default {
-  props: {
-    customers: {
-      type: Array,
-      required: true
-    }
-  },
-  methods: {
-    viewCustomer(customer) {
-      this.$emit('view-customer', customer);
-    },
-    syncCustomer(customer) {
-      this.$emit('sync-customer', customer);
-    }
-  }
-};
-</script> -->
-
-
-
-
-
 <template>
   <div>
+    <Alert v-if="apiMessage" :message="apiMessage" :type="alertType" :duration="1900" />
+    <div v-if="apiMessage">
+      <div v-for="(msg, index) in apiMessage" :key="index">
+        <p>{{ msg.apiMessage }}</p>
+      </div>
+      </div>
     <b-table
       v-if="customers && customers.length > 0"
       :items="customers"
@@ -72,11 +14,10 @@ export default {
       class="hovered table-bordered"
     >
       <template #cell(view)="row">
-        <b-button size="sm" variant="primary" @click="viewCustomer(row.item)">
+        <b-button   v-b-modal.modal-1 size="sm" variant="primary" @click="viewCustomer  (row.item)">
           View
         </b-button>
       </template>
-
       <template #cell(sync)="row">
         <b-button size="sm" variant="success" @click="syncCustomer(row.item)">
           Sync
@@ -88,17 +29,23 @@ export default {
       No customer details available
     </b-alert>
   </div>
+ 
 </template>
 
 <script>
-import { BAlert, BButton, BTable } from 'bootstrap-vue-next';
+import { ref } from 'vue';
+import axios from 'axios';
+import Alert from './Alert.vue';  
 
 export default {
   props: {
     customers: {
       type: Array,
       required: true
-    }
+    },
+  },
+  components: {
+    Alert
   },
   data() {
     return {
@@ -109,15 +56,63 @@ export default {
         { key: 'createdAt', label: 'Created At' },
         { key: 'view', label: 'View' },
         { key: 'sync', label: 'Sync' }
-      ]
+      ],
+      apiMessage: '', 
+      alertType: '' 
     };
   },
   methods: {
     viewCustomer(customer) {
       this.$emit('view-customer', customer);
     },
-    syncCustomer(customer) {
-      this.$emit('sync-customer', customer);
+    async syncCustomer(customer) {
+      this.apiMessage = '';
+      this.alertType = '';
+
+      try {
+        const token = import.meta.env.VITE_API_BEARER_TOKEN;
+        if (!token) {
+          console.error('No token found in .env file');
+          return;
+        }
+        
+        const response = await axios.post(
+          `${import.meta.env.VITE_APP_API_SYNC_CUSTOMER}?referenceNumber=${customer.refNumber}&workshopId=${customer.workshopId}`,
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+        console.log('Response from API:', response.data);
+        if (response.data && response.data) {
+          const zohoResponse = response.data.data;
+          // const apiData = zohoResponse.map((data)=>console.log("info", data)
+          // )
+          console.log('ZOHO_INVOICE_RESPONSE:', zohoResponse);
+          if (zohoResponse) {
+            let zohoArray = zohoResponse[0];
+            let res = zohoArray[zohoArray.length - 1];
+            this.apiMessage = res.ZOHO_INVOICE_RESPONSE.code + ":" + res.ZOHO_INVOICE_RESPONSE.message;
+            this.alertType = 'success'; 
+          } else {
+            this.apiMessage = 'No message available in Zoho response';
+            this.alertType = 'danger'; 
+          }
+        } else if (response.data.data && response.data.data) {
+          
+          this.apiMessage = response.data.data;
+          this.alertType = 'danger'; 
+        } else {
+          this.apiMessage = `Code: ${response.data.data}, Message: ${response.data.data}`;
+          this.alertType = 'danger'; 
+        }
+      } catch (error) {
+        console.error('Error syncing customer:', error);
+        this.apiMessage = `Sync failed!\n\nERROR: ${error.message}`;
+        this.alertType = 'danger'; 
+      }
     }
   }
 };

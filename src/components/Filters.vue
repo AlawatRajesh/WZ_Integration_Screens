@@ -2,28 +2,30 @@
     <div class="Zoho-filters-container"> 
       <b-form-select v-model="selectedBranchId"
        @change="onBranchChanged" 
-       class="Zoho-branch-dropdown">
+       class="Zoho-branch-dropdown custom-dropdown">
         <option value="">Select Branch</option>
         <option v-for="branch in branches" :key="branch.id" :value="branch.id" >
           {{ branch.name }}
         </option>
       </b-form-select>
-      <b-form-select v-model="selectedWorkshopId" v-if="selectedBranchId" @change="onWorkshopChanged" class="Zoho-workshop-dropdown">
-        <option value="">Select Workshop</option>
+      <b-form-select v-model="selectedWorkshopId" v-if="selectedBranchId" @change="onWorkshopChanged" class="Zoho-workshop-dropdown" size="xl" >
+        <option value="" >Select Workshop</option>
         <option v-for="workshop in workshops" :key="workshop.id" :value="workshop.id">
           {{ workshop.name }} 
+          
         </option>
-      </b-form-select>
+      </b-form-select>  
+    
   
       <div v-if="selectedWorkshopId" class="Zoho-customer-count">
-        <p>Customer Count: {{ customerCount }}</p>
+        <p>Customer Count: {{ customers.length }}</p>
       </div>
   
       <div v-if="selectedWorkshopId" class="Zoho-filter-controls">
         <b-form-input 
           v-model="searchQuery" 
           placeholder="Search customers by name" 
-          @input="debouncedFilterCustomers" 
+           @input="debouncedFilterCustomers"
           class="Zoho-search-bar"
         />
         <b-form-select v-model="dateFilter" @change="filterCustomers" class="Zoho-date-filter-dropdown">
@@ -35,67 +37,58 @@
         </b-form-select>
       </div>
     </div>
+   
   </template>
   <script>
   import { ref, computed ,onMounted} from 'vue';
   import { debounce } from 'lodash';
-  import axios from 'axios';
+ 
   
   export default {
+    
     props: {
+
       branches: Array,
       workshops: Array,
       customers: Array,
-      selectedBranchId: Number,
+      selectedBranchId:[Number, String],  
       selectedWorkshopId: Number,
       searchQuery: String,
       dateFilter: String
+      
     },
     emits: ['update:selectedBranchId', 'update:selectedWorkshopId', 'update:searchQuery', 'update:dateFilter'],
     setup(props, { emit }) {
       const selectedBranchId = ref(props.selectedBranchId);
-      const selectedWorkshopId = ref(props.selectedWorkshopId);
+      const selectedWorkshopId = ref(props.selectedWorkshopId );
       const searchQuery = ref(props.searchQuery);
       const dateFilter = ref(props.dateFilter);
   
-      const filteredWorkshops = computed(() => {
+
+const filteredWorkshops = computed(() => {
   if (!props.workshops) return [];  
   return props.workshops.filter(workshop =>
-    !selectedBranchId.value || workshop.branchId === selectedBranchId.value
+    (!selectedBranchId.value || workshop.branchId === selectedBranchId.value)&& workshop.name.toLowerCase().includes(this.searchQuery.toLowerCase())
   );
 });
 
-// const filteredCustomers = computed(() => {
-//   if (!props.customers) return [];  
-//   return props.customers.filter(customer => {
-//     return (
-//       (!selectedWorkshopId.value || customer.workshopId === selectedWorkshopId.value) &&
-//       //(!searchQuery.value || customer.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
-//       customer.sequenceNumber.toString().includes(searchQuery.value)
-            
-      
 
-//     );
-//   });
-// }); 
 const filteredCustomers = computed(() => {
   if (!props.customers) return [];  
   return props.customers.filter(customer => {
     return (
       (!selectedWorkshopId.value || customer.workshopId === selectedWorkshopId.value) &&
-      customer.ref_numbers.toString().includes(searchQuery.value)
+      customer.refNumber.toString().includes(searchQuery.value)
     );
   });
 });
-
-
-  
       const customerCount = computed(() => filteredCustomers.value.length);
   
       const debouncedFilterCustomers = debounce(() => {
         emit('update:searchQuery', searchQuery.value);
-      }, 500);
-  
+      }, 500); 
+      
+      
       const onBranchChanged = () => {
         emit('update:selectedBranchId', selectedBranchId.value);
         selectedWorkshopId.value = ''; 
@@ -119,12 +112,20 @@ const filteredCustomers = computed(() => {
         debouncedFilterCustomers,
         onBranchChanged,
         onWorkshopChanged,
-        filterCustomers
+        filterCustomers,
+        
+       
       };
     }
   };
   </script> 
-  <style>
+
+
+  
+  
+
+
+ <style>
 
 .Zoho-filters-container {
     display: flex;
@@ -139,8 +140,19 @@ const filteredCustomers = computed(() => {
     padding: 8px 12px;
     font-size: 14px;
     border-radius: 4px;
-    max-width: 170px;
+    max-width: 170px ;
+    
 }
+
+
+.Zoho-workshop-dropdown option {
+ 
+  padding: 14px; 
+  max-width: 20px;
+  font-size: 15px; 
+   
+}
+
 button:hover {
     background-color: #0056b3;
     color: #fff;
@@ -149,8 +161,8 @@ button:hover {
     display: flex;
     align-items: left;
     gap: 5px;
-    margin-left: 33%;
-    max-width:400px
+    margin-left: 24%;
+    max-width:550px
   }
   
 .Zoho-search-bar {
@@ -161,7 +173,7 @@ button:hover {
   }
 .Zoho-date-filter-dropdown {
     padding: 8px 12px;
-   width: 50px;
+   width: 40px;
     font-size: 14px;
     border-radius: 4px;
   }
@@ -173,9 +185,10 @@ button:hover {
     font-weight: bold;
    
   }
+
   
   
   </style>
   
 
-  
+   
