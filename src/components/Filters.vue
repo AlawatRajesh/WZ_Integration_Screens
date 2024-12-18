@@ -10,36 +10,20 @@
     </b-form-select>
 
     <div class="custom-dropdown" v-if="selectedBranchId">
-      <input 
-        type="text"
-        v-model="workshopSearchQuery"  
-        @input="resetDropdown()"
-        class="search-input"
-        placeholder="Search Workshop"
-        @focus="isOpen = true"  
+      <Multiselect
+        v-model="selectedWorkshops"
+        :options="filteredWorkshops"
+        label="name"
+        track-by="id"
+        placeholder="Select or search for a workshop"
+        :multiple="true"
+        :taggable="true"
+        @tag="addWorkshopTag"
+        :loading="loadingWorkshops"
+        @select="selectWorkshop"   
       />
-      <div v-if="isOpen && filteredWorkshops.length > 0" class="dropdown-options">
-        <div 
-          v-for="workshop in filteredWorkshops" 
-          :key="workshop.id" 
-          class="dropdown-option"
-          @click="selectWorkshop(workshop)">
-          {{ workshop.name }}
-        </div>
-      </div>
-      <div v-if="isOpen && filteredWorkshops.length === 0" class="dropdown-options">
-        <div 
-          v-for="workshop in workshops" 
-          :key="workshop.id" 
-          class="dropdown-option"
-          @click="selectWorkshop(workshop)">
-          {{ workshop.name }}
-        </div>
-      </div>
-      <div v-if="workshopSearchQuery && filteredWorkshops.length === 0" class="no-results">
-        No results found
-      </div>
     </div>
+
     <div v-if="selectedWorkshopId" class="Zoho-customer-count">
       <p>Customer Count: {{ customerCount }}</p>
     </div>
@@ -58,15 +42,19 @@
         <option value="this_week">This Week</option>
         <option value="this_month">This Month</option>
       </b-form-select>
-    </div>
+    </div> 
   </div>
 </template>
-
 <script>
 import { ref, computed } from 'vue';
 import { debounce } from 'lodash';
+import Multiselect from 'vue-multiselect';
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
+  components: {
+    Multiselect
+  },
   props: {
     branches: Array,
     workshops: Array,
@@ -82,10 +70,12 @@ export default {
   setup(props, { emit }) {
     const selectedBranchId = ref(props.selectedBranchId);
     const selectedWorkshopId = ref(props.selectedWorkshopId);
+    const selectedWorkshops = ref([]);  
     const workshopSearchQuery = ref('');  
     const customerSearchQuery = ref('');  
     const dateFilter = ref(props.dateFilter);
     const isOpen = ref(false);  
+    const loadingWorkshops = ref(false);  
 
     const filteredWorkshops = computed(() => {
       if (!props.workshops) return [];
@@ -97,10 +87,9 @@ export default {
 
     const selectWorkshop = (workshop) => {
       emit('workshop-selected', workshop.id);
-      workshopSearchQuery.value = workshop.name;  
-      selectedWorkshopId.value = workshop.id;  
-      isOpen.value = !isOpen.value;  
+      selectedWorkshopId.value = workshop.id;
     };
+
     const filteredCustomers = computed(() => {
       if (!props.customers) return [];
       return props.customers.filter(customer => {
@@ -126,13 +115,19 @@ export default {
       emit('update:dateFilter', dateFilter.value);
     };
 
-    const resetDropdown = () => {
-      isOpen.value = true;  
+    const addWorkshopTag = (newTag) => {
+      const tag = {
+        name: newTag,
+        id: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000)) 
+      };
+      props.workshops.push(tag);  
+      selectedWorkshops.value.push(tag);  
     };
 
     return {
       selectedBranchId,
       selectedWorkshopId,
+      selectedWorkshops,
       workshopSearchQuery,
       customerSearchQuery,
       dateFilter,
@@ -143,14 +138,15 @@ export default {
       onBranchChanged,
       filterCustomers,
       selectWorkshop,
-      isOpen,
-      resetDropdown,
+      addWorkshopTag,
+      loadingWorkshops
     };
   }
 };
 </script>
 
-<style>  
+<style scoped>
+
 .Zoho-filters-container {
   display: flex;
   align-items: center;
@@ -170,12 +166,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;  
-  max-width: 550px;
+  max-width: 350px;
   flex-wrap: nowrap;
-  margin-left: 17%;  
+  margin-left: 13%;  
 }
-
-
 .Zoho-search-bar {
   padding: 8px 12px;
   font-size: 14px;
@@ -183,8 +177,6 @@ export default {
   border-radius: 4px;
   border: 1px solid #ccc;
 }
-
-
 .Zoho-date-filter-dropdown {
   padding: 8px 12px;
   font-size: 14px;
@@ -192,55 +184,64 @@ export default {
   width: 100px;  
   border: 1px solid #ccc;
 }
-
-
 .Zoho-customer-count {
-  width: auto;
+  max-width: 200px;
   margin-top: 10px;
   font-size: 15px;
   font-weight: bold;           
   display: inline-block;  
+ 
 }
 
-
-.custom-dropdown {
-  position: relative;
-  width: 20%;
+.multiselect {
+  max-width: 145%;
+  max-width: 950px;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
-.search-input {
-  width: 100%;
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
+.multiselect__input {
+  border: 2px solid #007bff;
+  padding: 8px 12px;
   border-radius: 4px;
-  box-sizing: border-box;
+  font-size: 10px;
+  outline: none;
 }
-.dropdown-options {
-  position: absolute;
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  z-index: 10;
-  box-sizing: border-box;
+.multiselect__input:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
-.dropdown-option {
-  padding: 8px;
+.multiselect__tags {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-top: 5px;
+}
+.multiselect__tag {
+  background-color: #007bff;
+  color: white;
+  border-radius: 12px;
+  padding: 5px 12px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+.multiselect__tag .multiselect__tag-icon {
+  margin-left: 5px;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
-.dropdown-option:hover {
+.multiselect__option {
+  padding: 10px;
+  font-size: 14px;
+}
+.multiselect__option--highlight {
   background-color: #f0f0f0;
 }
-.no-results {
-  padding: 8px;
-  color: gray;
-  font-style: italic;
-}
+.multiselect__option--selected {
+  background-color: #007bff;
+  color: white;
+} 
+
+
 
 </style>
 
-
-           

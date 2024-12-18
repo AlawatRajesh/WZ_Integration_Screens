@@ -2,7 +2,7 @@
   <b-modal :visible="isModalVisible" @update:visible="handleModalVisibility" aria-labelledby="modal-title" size="xl">
     <h5 class="Zoho-modal-title" id="modal-title">Receipt History for {{ customer.refNumber }}</h5>
 
-    <Alert v-if="errorMessage" :message="errorMessage" :type="'error'" :duration="1900" />
+    <Alert v-if="errorMessage" :message="errorMessage" :type="errorType" :duration="1900" />
 
     <b-table :items="paginatedReceipts" :fields="fields" bordered hover class="Zoho-tables">
       <template v-slot:cell(resync)="data">
@@ -57,7 +57,7 @@ export default {
     const errorMessage = ref(null); 
     const receiptCurrentPage = ref(1);
     const itemsPerPage = ref(10);
-    
+    const errorType = ref('error');
     const fields = [
       { key: 'receiptDate', label: 'Receipt Date' },
       { key: 'message', label: 'Message' },
@@ -99,12 +99,15 @@ export default {
         console.log('Customer synced successfully:', response.data);
         if (response.data.ERROR) {
           errorMessage.value = `Sync failed!\n\nERROR: ${response.data.ERROR}`;
+          errorType.value = 'error';  
         } else {
           errorMessage.value = 'Sync successful!';
+          errorType.value = 'success';  
         }
       } catch (error) {
         console.error('Error syncing customer:', error);
         errorMessage.value = `Sync failed!\n\nERROR: ${error.message}`;
+        errorType.value = 'error';  
       }
     };
 
@@ -122,7 +125,6 @@ export default {
 };
 </script>
 
-
 <style>
 .Zoho-tables {
   user-select: none;
@@ -132,3 +134,5 @@ export default {
   text-align: center;
 }
 </style>
+
+
