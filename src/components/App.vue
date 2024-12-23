@@ -161,6 +161,7 @@ export default {
     watch(selectedWorkshopId, (newWorkshopId) => {
       if (newWorkshopId) {
         fetchCustomers();
+        customerCurrentPage.value = 1;
       }
     });
     onMounted(() => {
