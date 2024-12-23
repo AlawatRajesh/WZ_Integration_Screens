@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div>
     <Alert v-if="apiMessage" :message="apiMessage" :type="alertType" :duration="1900" />
     <div v-if="apiMessage">
@@ -7,7 +7,7 @@
       </div>
       </div>
     <b-table
-      v-if="customers && customers.length > 0"
+      v-if="customers && customers.length > 0 "
       :items="customers"
       :fields="fields"
       responsive
@@ -116,7 +116,11 @@ export default {
     }
   }
 };
-</script> 
+</script>   
+
+
+
+
 
 <style>
 table tbody tr:hover {
@@ -142,6 +146,8 @@ table tbody {
   max-height: 250px;  
   overflow-y: auto;
   scrollbar-width: thin; 
+ 
 }
+
 </style>
 

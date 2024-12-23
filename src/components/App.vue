@@ -1,4 +1,4 @@
-<template>
+<template> 
   <div id="app" class="Zoho-container">
   <div> 
       <Filters 
@@ -13,18 +13,21 @@
         @update:selectedWorkshopId="updateSelectedWorkshopId"
         @update:searchQuery="updateSearchQuery"
         @update:dateFilter="updateDateFilter" 
-        @workshop-selected="handleWorkshopSelected"/>
+        @workshop-selected="handleWorkshopSelected"
+        @workshop-deselected="handleWorkshopDeselected"/>
     </div>
-    <div v-if="selectedWorkshopId">
-      <h3 class="hello mb-3">Failed Invoice Details for {{ getWorkshopName(selectedWorkshopId) }}</h3>
+    <div v-if="selectedWorkshopId ">
+      <h3 class="hello mb-3">Failed Invoice Details</h3>
     </div>
     <div v-if="selectedWorkshopId && customers.length > 0">
-      <table-component :customers="pagedCustomers" c @view-customer="onViewCustomer" @sync-customer="onSyncCustomer" />
+      <table-component :customers="pagedCustomers"  @view-customer="onViewCustomer" @sync-customer="onSyncCustomer" />
       <pagination 
         :total-items="customerCount" 
         :items-per-page="itemsPerPage" 
         :current-page="customerCurrentPage" 
         @page-changed="onCustomerPageChanged" />
+     
+
     </div>
     <modal-component v-if="showModal" 
     :customer="selectedCustomer" 
@@ -110,6 +113,7 @@ export default {
     };
     const handleWorkshopSelected = (workshopId) => {
       selectedWorkshopId.value = workshopId;
+     
     };
     onMounted(() => {
       fetchWorkshops();
@@ -137,18 +141,22 @@ export default {
         });
         const customerCount = ref(0);
         const apiData = response.data.data;
-        customers.value = apiData.map((customer, index) => ({
-          id: index + 1,
+        customers.value = [
+            ...customers.value,
+            ...apiData.map((customer, index) => ({
+              id: customers.value.length + index + 1 ,
           sequenceNumber: customer.sequenceNumber,
-          createdAt: customer.createdAt,
+            createdAt: customer.createdAt,
           refNumber: customer.ref_numbers,
-          workshopId: selectedWorkshopId.value,
-        }));
+            workshopId: selectedWorkshopId.value,
+        }))
+      ];
         customerCount.value = customers.value.length;
       } catch (error) {
         console.error('Error fetching customers:', error);
       }
     };
+  
     watch(selectedWorkshopId, (newWorkshopId) => {
       if (newWorkshopId) {
         fetchCustomers();
@@ -157,6 +165,7 @@ export default {
     onMounted(() => {
       fetchWorkshops();
     });
+    
     const updateSelectedBranchId = (newBranchId) => {
       selectedBranchId.value = newBranchId;
       selectedWorkshopId.value = ''; 
@@ -212,12 +221,19 @@ const customerCount = computed(() => filteredCustomers.value.length);
       }
     }; 
     const onCustomerPageChanged = (newPage) => {
-      customerCurrentPage.value = newPage;
-    }; 
+  if (newPage <= totalPages.value && newPage >= 1) {
+    customerCurrentPage.value = newPage;
+  }
+}; watch([searchQuery, dateFilter], () => {
+      customerCurrentPage.value = 1;
+    });
+    const totalPages = computed(() => Math.ceil(customerCount.value / itemsPerPage.value));
+
     const onViewCustomer = async (customer) => {
     console.log("onViewCustomer called, showModal:", showModal.value);
   if (showModal.value) {
     referenceNumber.value = [];
+  
     closeModal();
   } else {
     selectedCustomer.value = customer;
@@ -230,7 +246,7 @@ const customerCount = computed(() => filteredCustomers.value.length);
         'Authorization': `Bearer ${token}`,
       },
       params: {
-        workshopId: selectedWorkshopId.value,
+        workshopId: customer.workshopId,
         referenceNumber: customer.refNumber
       },
     });
@@ -240,7 +256,7 @@ const customerCount = computed(() => filteredCustomers.value.length);
       receiptNumber: receipt.receiptNumber,  
       receiptDate: receipt.receiptDate,
       message: receipt.message,
-      //workshopId: selectedWorkshopId.value,
+      // workshopId: selectedWorkshopId.value,
     }));
     console.log('Processed customer data:', receipts.value);
   } catch (error) {
@@ -266,7 +282,11 @@ const toggleModal = () => {
 const onSyncCustomer = (customer) => {
       console.log('Syncing customer data:', customer);
     };
-
+    
+   const handleWorkshopDeselected = (workshopId) => {
+  
+  customers.value = customers.value.filter(customer => customer.workshopId !== workshopId);
+};
     return {
       receipts,
       branches,
@@ -296,16 +316,18 @@ const onSyncCustomer = (customer) => {
       toggleModal,
       customerCount,
       handleWorkshopSelected,
+      handleWorkshopDeselected
       
     };
   },
 };
 </script>  
 
+
 <style scoped>
 .Zoho-container {
   background-color: #fff;
-  width: 90%;
+  width: 95%;
   max-width: 3000px;
   border-radius: 0.5rem;
   padding: 1rem;

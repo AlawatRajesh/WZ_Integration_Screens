@@ -83,6 +83,8 @@ export default {
     };
 
     const syncReceipt = async (receipt) => {
+      errorMessage.value = null;
+      errorType.value = null;
       try {
         const token = import.meta.env.VITE_API_BEARER_TOKEN;
         if (!token) {

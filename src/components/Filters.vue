@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="Zoho-filters-container">
     <b-form-select v-model="selectedBranchId"
       @change="onBranchChanged"
@@ -20,12 +20,13 @@
         :taggable="true"
         @tag="addWorkshopTag"
         :loading="loadingWorkshops"
-        @select="selectWorkshop"   
+        @select="selectWorkshop"
+        @remove="deselectWorkshop"   
       />
     </div>
 
     <div v-if="selectedWorkshopId" class="Zoho-customer-count">
-      <p>Customer Count: {{ customerCount }}</p>
+      <p>Customer Count: {{ customers.length  }}</p>
     </div>
 
     <div v-if="selectedWorkshopId" class="Zoho-filter-controls">
@@ -42,8 +43,10 @@
         <option value="this_week">This Week</option>
         <option value="this_month">This Month</option>
       </b-form-select>
-    </div> 
+    </div>
   </div>
+ 
+
 </template>
 <script>
 import { ref, computed } from 'vue';
@@ -60,12 +63,12 @@ export default {
     workshops: Array,
     customers: Array,
     selectedBranchId: [Number, String],
-    selectedWorkshopId: Number,
+    selectedWorkshopId: [Number,Array],
     searchQuery: String,  
     dateFilter: String,
   },
   emits: ['update:selectedBranchId', 'update:selectedWorkshopId', 'update:searchQuery', 
-    'update:dateFilter', 'workshop-selected'],
+    'update:dateFilter', 'workshop-selected','workshop-deselected'],
   
   setup(props, { emit }) {
     const selectedBranchId = ref(props.selectedBranchId);
@@ -89,6 +92,10 @@ export default {
       emit('workshop-selected', workshop.id);
       selectedWorkshopId.value = workshop.id;
     };
+    const deselectWorkshop = (workshop) => {
+      emit('workshop-deselected', workshop.id);  
+    };
+
 
     const filteredCustomers = computed(() => {
       if (!props.customers) return [];
@@ -99,7 +106,7 @@ export default {
         );
       });
     });
-
+    
     const customerCount = computed(() => filteredCustomers.value.length);
 
     const debouncedFilterCustomers = debounce(() => {
@@ -115,14 +122,10 @@ export default {
       emit('update:dateFilter', dateFilter.value);
     };
 
-    const addWorkshopTag = (newTag) => {
-      const tag = {
-        name: newTag,
-        id: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000)) 
-      };
-      props.workshops.push(tag);  
-      selectedWorkshops.value.push(tag);  
-    };
+   
+
+    
+
 
     return {
       selectedBranchId,
@@ -138,12 +141,16 @@ export default {
       onBranchChanged,
       filterCustomers,
       selectWorkshop,
-      addWorkshopTag,
-      loadingWorkshops
+      
+      loadingWorkshops,
+      deselectWorkshop,
+     
+      
     };
   }
 };
-</script>
+</script>    
+
 
 <style scoped>
 
@@ -244,4 +251,12 @@ export default {
 
 
 </style>
+
+
+
+
+
+
+
+
 
