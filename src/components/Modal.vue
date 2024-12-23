@@ -83,39 +83,53 @@ export default {
     };
 
     const syncReceipt = async (receipt) => {
-      errorMessage.value = null;
-      errorType.value = null;
-      try {
-        const token = import.meta.env.VITE_API_BEARER_TOKEN;
-        if (!token) {
-          console.error('No token found in .env file');
-          return;
+  errorMessage.value = null;
+  errorType.value = null;
+
+  try {
+    const token = import.meta.env.VITE_API_BEARER_TOKEN;
+    if (!token) {
+      console.error('No token found in .env file');
+      return;
+    }
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_API_SYNC_RECEIPTS}?referenceNumber=${receipt.receiptNumber}&workshopId=${props.customer.workshopId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-        const response = await axios.post(
-          `${import.meta.env.VITE_APP_API_SYNC_RECEIPTS}?referenceNumber=${receipt.receiptNumber}&workshopId=${props.customer.workshopId}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }}
-        ); 
-        console.log('Customer synced successfully:', response.data);
-        if (response.data.ERROR) {
-          errorMessage.value = `Sync failed!\n\nERROR: ${response.data.ERROR}`;
-          errorType.value = 'error';  
-        } else {
-          errorMessage.value = 'Sync successful!';
-          errorType.value = 'success';  
-        }
-      } catch (error) {
-        console.error('Error syncing customer:', error);
-        errorMessage.value = `Sync failed!\n\nERROR: ${error.message}`;
-        errorType.value = 'error';  
       }
-    };
+    );
+
+    
+    if (response.data.ERROR) {
+      errorMessage.value = `Sync failed!\n\nERROR: ${response.data.ERROR}`;
+      errorType.value = 'success';  
+
+     
+      emit('sync-success', receipt);
+    } else {
+      
+      errorMessage.value = 'Sync Failed!';
+      errorType.value = 'danger';  
+    }
+
+  } catch (error) {
+    console.error('Error syncing customer:', error);
+    errorMessage.value = `Sync failed!\n\nERROR: ${error.message}`;
+    errorType.value = 'danger';  
+
+    
+    emit('sync-success', receipt);
+  }
+};
+
 
     return {
       errorMessage,
       fields,
+      errorType,
       receiptCurrentPage,
       itemsPerPage,
       paginatedReceipts,
@@ -125,7 +139,8 @@ export default {
     };
   }
 };
-</script>
+</script> 
+
 
 <style>
 .Zoho-tables {

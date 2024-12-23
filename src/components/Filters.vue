@@ -18,7 +18,7 @@
         placeholder="Select or search for a workshop"
         :multiple="true"
         :taggable="true"
-        @tag="addWorkshopTag"
+       
         :loading="loadingWorkshops"
         @select="selectWorkshop"
         @remove="deselectWorkshop"   
@@ -122,10 +122,6 @@ export default {
       emit('update:dateFilter', dateFilter.value);
     };
 
-   
-
-    
-
 
     return {
       selectedBranchId,
@@ -141,7 +137,6 @@ export default {
       onBranchChanged,
       filterCustomers,
       selectWorkshop,
-      
       loadingWorkshops,
       deselectWorkshop,
      

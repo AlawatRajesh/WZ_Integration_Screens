@@ -20,7 +20,7 @@
       <h3 class="hello mb-3">Failed Invoice Details</h3>
     </div>
     <div v-if="selectedWorkshopId && customers.length > 0">
-      <table-component :customers="pagedCustomers"  @view-customer="onViewCustomer" @sync-customer="onSyncCustomer" />
+      <table-component :customers="pagedCustomers"  @view-customer="onViewCustomer" @sync-customer="onSyncCustomer" @remove-customer="removeCustomer" />
       <pagination 
         :total-items="customerCount" 
         :items-per-page="itemsPerPage" 
@@ -34,6 +34,7 @@
     :receipts="receipts" 
     :receipt="receiptNumber"
     @close="closeModal" 
+    @sync-success="removeReceipt" 
     @click-outside="handleOutsideClick" />
   </div> 
   
@@ -287,7 +288,17 @@ const onSyncCustomer = (customer) => {
   
   customers.value = customers.value.filter(customer => customer.workshopId !== workshopId);
 };
+const removeCustomer = (customerId) => {
+  customers.value = customers.value.filter(customer => customer.id !== customerId);
+};
+
+
+const removeReceipt = (receipt) => {
+      receipts.value = receipts.value.filter(item => item.receiptNumber !== receipt.receiptNumber);
+    };
     return {
+    removeCustomer,
+      removeReceipt,
       receipts,
       branches,
       workshops,
@@ -321,7 +332,7 @@ const onSyncCustomer = (customer) => {
     };
   },
 };
-</script>  
+</script>   
 
 
 <style scoped>

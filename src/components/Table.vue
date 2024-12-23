@@ -66,60 +66,57 @@ export default {
       this.$emit('view-customer', customer);
     },
     async syncCustomer(customer) {
-      this.apiMessage = '';
-      this.alertType = '';
+  this.apiMessage = '';
+  this.alertType = '';
 
-      try {
-        const token = import.meta.env.VITE_API_BEARER_TOKEN;
-        if (!token) {
-          console.error('No token found in .env file');
-          return;
-        }
-        
-        const response = await axios.post(
-          `${import.meta.env.VITE_APP_API_SYNC_CUSTOMER}?referenceNumber=${customer.refNumber}&workshopId=${customer.workshopId}`,
-          {},
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          }
-        );
-        console.log('Response from API:', response.data);
-        if (response.data && response.data) {
-          const zohoResponse = response.data.data;
-          // const apiData = zohoResponse.map((data)=>console.log("info", data)
-          // )
-          console.log('ZOHO_INVOICE_RESPONSE:', zohoResponse);
-          if (zohoResponse) {
-            let zohoArray = zohoResponse[0];
-            let res = zohoArray[zohoArray.length - 1];
-            this.apiMessage = res.ZOHO_INVOICE_RESPONSE.code + ":" + res.ZOHO_INVOICE_RESPONSE.message;
-            this.alertType = 'success'; 
-          } else {
-            this.apiMessage = 'No message available in Zoho response';
-            this.alertType = 'danger'; 
-          }
-        } else if (response.data.data && response.data.data) {
-          
-          this.apiMessage = response.data.data;
-          this.alertType = 'danger'; 
-        } else {
-          this.apiMessage = `Code: ${response.data.data}, Message: ${response.data.data}`;
-          this.alertType = 'danger'; 
-        }
-      } catch (error) {
-        console.error('Error syncing customer:', error);
-        this.apiMessage = `Sync failed!\n\nERROR: ${error.message}`;
-        this.alertType = 'danger'; 
-      }
+  try {
+    const token = import.meta.env.VITE_API_BEARER_TOKEN;
+    if (!token) {
+      console.error('No token found in .env file');
+      return;
     }
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_APP_API_SYNC_CUSTOMER}?referenceNumber=${customer.refNumber}&workshopId=${customer.workshopId}`,
+      {},
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    console.log('Response from API:', response.data);
+
+    if (response.data && response.data.data) {
+      const zohoResponse = response.data.data;
+      console.log('ZOHO_INVOICE_RESPONSE:', zohoResponse);
+      if (zohoResponse) {
+        let zohoArray = zohoResponse[0];
+        let res = zohoArray[zohoArray.length - 1];
+        this.apiMessage = res.ZOHO_INVOICE_RESPONSE.code + ":" + res.ZOHO_INVOICE_RESPONSE.message;
+        this.alertType = 'success';
+
+       
+        this.$emit('remove-customer', customer.id); 
+      } else {
+        this.apiMessage = 'No message available in Zoho response';
+        this.alertType = 'danger';
+      }
+    } else {
+      this.apiMessage = `Code: ${response.data.data}, Message: ${response.data.data}`;
+      this.alertType = 'danger';
+    }
+  } catch (error) {
+    console.error('Error syncing customer:', error);
+    this.apiMessage = `Sync failed!\n\nERROR: ${error.message}`;
+    this.alertType = 'danger';
+  }
+}
   }
 };
-</script>   
 
-
-
+</script>    
 
 
 <style>
