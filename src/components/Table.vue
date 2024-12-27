@@ -38,6 +38,7 @@ import axios from 'axios';
 import Alert from './Alert.vue';  
 
 export default {
+  name: 'Table',
   props: {
     customers: {
       type: Array,
@@ -117,6 +118,11 @@ export default {
 };
 
 </script>    
+
+
+
+
+
 
 
 <style>

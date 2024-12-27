@@ -47,7 +47,7 @@ import Filters from './Filters.vue';
 import TableComponent from './Table.vue';
 import ModalComponent from './Modal.vue';
 import Pagination from './Pagination.vue';
-import router from '../router';
+
 import Steps from './Steps.vue';
 
 
@@ -79,7 +79,6 @@ export default {
     const showModal = ref(false);
     const itemsPerPage = ref(10);
     const customerCurrentPage = ref(1);
-    const router = useRouter();
     const receipts = ref([]);
     const referenceNumber = ref([]); 
     const fetchWorkshops = async () => {
@@ -336,11 +335,17 @@ const removeReceipt = (receipt) => {
 </script>   
 
 
+
+
+
+
+
+
 <style scoped>
 .Zoho-container {
   background-color: #fff;
-  width: 95%;
-  max-width: 3000px;
+   width: 95%; 
+  max-width: 3000px; 
   border-radius: 0.5rem;
   padding: 1rem;
   box-shadow:   0.35rem 0.2rem 0.35rem 0.35rem rgba(0, 0, 0, 0.1);

@@ -27,6 +27,7 @@ import axios from 'axios';
 import Alert from './Alert.vue'; 
 
 export default {
+  name: 'Modal',
   components: {
     Alert
   },
@@ -140,6 +141,8 @@ export default {
   }
 };
 </script> 
+
+
 
 
 <style>

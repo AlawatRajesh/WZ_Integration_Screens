@@ -29,7 +29,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import App from './components/App.vue';
 
-import Steps from './components/Steps.vue';
+//import Steps from './components/Steps.vue';
 
 const routes = [
   {
@@ -38,9 +38,9 @@ const routes = [
     //component: App,
   },
   {
-    path: '/steps',
-    name: 'Steps',
-    component: Steps,
+    // path: '/steps',
+    // name: 'Steps',
+    // component: Steps,
   },
 ];
 

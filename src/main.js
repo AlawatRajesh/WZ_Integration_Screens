@@ -9,6 +9,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Filters from './components/Filters.vue';
 import { BModal, BButton, BTable, BPagination, BFormSelect, BFormInput,BAlert,BDropdown } from 'bootstrap-vue-next';
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';  // Correct BootstrapVueNext CSS import
+import  Alert  from './components/Alert.vue';
+
+
 
 const app = createApp(App);
 
@@ -26,9 +29,8 @@ app.component('Table', Table);
 app.component('Pagination', Pagination);
 app.component('Modal', Modal);
 app.component('Filters', Filters);
+app.component('Alert', Alert);
 
-// Use the router
-app.use(router);
 
 // Mount the app
 app.mount('#app');

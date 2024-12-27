@@ -47,7 +47,7 @@
   </div>
  
 
-</template>
+</template> 
 <script>
 import { ref, computed } from 'vue';
 import { debounce } from 'lodash';
@@ -55,6 +55,7 @@ import Multiselect from 'vue-multiselect';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 export default {
+  name: 'Filters',
   components: {
     Multiselect
   },
@@ -147,6 +148,8 @@ export default {
 </script>    
 
 
+
+
 <style scoped>
 
 .Zoho-filters-container {
@@ -159,6 +162,7 @@ export default {
 .Zoho-branch-dropdown {
   max-width: 150px;
   font-size: 14px;
+  margin-top: 10px;
 }
 .Zoho-workshop-dropdown option {
   padding: 10px;
@@ -196,9 +200,9 @@ export default {
 }
 
 .multiselect {
-  max-width: 145%;
+  /* max-width: 145%;  */
   max-width: 950px;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
   margin-top: 10px;
 }
 .multiselect__input {
