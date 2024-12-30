@@ -1,8 +1,12 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
-//import lodash from 'lodash/debounce'; 
+import lodash from 'lodash'; // Default import
 
+
+const { debounce } = lodash; 
+
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
   resolve: {
@@ -14,14 +18,11 @@ export default defineConfig({
   },
   
   server: {
-    host: '0.0.0.0',  
-    port: 8080,         
-    open: true, 
-    hmr: {
-      protocol: 'ws', 
-      // host: '0.0.0.0',
-    },
-    strictPort: true,  
-     cors: true,          
+    host: '0.0.0.0',
+    port: 8080, 
+    open :true,
+    
   },
+  
 });
+

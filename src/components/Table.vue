@@ -159,6 +159,10 @@ table tbody {
 .zoho-message-column {
   width: 300px !important; 
 }
-</style> 
 
+
+
+
+
+</style>
 

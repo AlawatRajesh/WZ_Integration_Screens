@@ -147,6 +147,7 @@ export default {
               id: customers.value.length + index + 1 ,
               apiResponse: customer.apiResponse,
           sequenceNumber: customer.sequenceNumber,
+          apiResponse:customer.apiResponse,
             createdAt: customer.createdAt,
           refNumber: customer.ref_numbers,
             workshopId: selectedWorkshopId.value,
@@ -288,9 +289,11 @@ const onSyncCustomer = (customer) => {
    const handleWorkshopDeselected = (workshopId) => {
   
   customers.value = customers.value.filter(customer => customer.workshopId !== workshopId);
+  customerCurrentPage.value = 1;
 };
 const removeCustomer = (customerId) => {
   customers.value = customers.value.filter(customer => customer.id !== customerId);
+  customerCurrentPage.value = 1;
 };
 
 
