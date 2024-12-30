@@ -145,6 +145,7 @@ export default {
             ...customers.value,
             ...apiData.map((customer, index) => ({
               id: customers.value.length + index + 1 ,
+              apiResponse: customer.apiResponse,
           sequenceNumber: customer.sequenceNumber,
             createdAt: customer.createdAt,
           refNumber: customer.ref_numbers,

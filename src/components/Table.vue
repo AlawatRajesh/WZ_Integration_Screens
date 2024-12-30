@@ -51,12 +51,12 @@ export default {
   data() {
     return {
       fields: [
-        { key: 'id', label: 'S.No' },
-        { key: 'sequenceNumber', label: 'Sequence Number' },
-        { key: 'refNumber', label: 'Invoice No' },
-        { key: 'createdAt', label: 'Created At' },
-        { key: 'view', label: 'View' },
-        { key: 'sync', label: 'Sync' }
+        { key: 'sequenceNumber', label: 'Sequence Number',tdClass: 'small-column',thClass: 'small-column' },
+        { key: 'createdAt', label: 'Created At' ,tdClass: 'small-column',thClass: 'small-column' },
+        { key: 'refNumber', label: 'Invoice No',tdClass: 'small-column',thClass: 'small-column'},
+        { key: 'apiResponse', label: 'Zoho Message', tdClass: 'zoho-message-column',thClass: 'zoho-message-column' },
+        { key: 'view', label: 'Receipts', tdClass: 'small-columns',thClass: 'small-columns' },
+        { key: 'sync', label: 'Sync', tdClass: 'small-columns',thClass: 'small-columns' }
       ],
       apiMessage: '', 
       alertType: '' 
@@ -120,5 +120,45 @@ export default {
 </script>    
 
 
+<style>
+table tbody tr:hover {
+  background-color: #e9ecef;
+  cursor: pointer;
+}
+
+table thead, table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  text-align: center;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+td {
+  background-color: #fff;
+  word-wrap: break-word; 
+  white-space: normal;   
+  overflow-wrap: break-word; 
+}
+
+table tbody {
+  display: block;
+  max-height: 250px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.small-column {
+  width: 120px !important; 
+}
+.small-columns {
+  width: 100px !important; 
+}
+.zoho-message-column {
+  width: 300px !important; 
+}
+</style> 
 
 
