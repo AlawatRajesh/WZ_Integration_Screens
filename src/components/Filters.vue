@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="Zoho-filters-container">
     <b-form-select v-model="selectedBranchId"
       @change="onBranchChanged"
@@ -141,11 +141,13 @@ export default {
       loadingWorkshops,
       deselectWorkshop,
      
+     
       
     };
   }
 };
-</script>    
+</script>     
+
 
 
 
@@ -157,7 +159,8 @@ export default {
   align-items: center;
   gap: 10px;  
   margin-bottom: 10px;
-  flex-wrap: nowrap;  
+  flex-wrap: nowrap; 
+  
 }
 .Zoho-branch-dropdown {
   max-width: 150px;
@@ -249,7 +252,7 @@ export default {
 
 
 
-</style>
+</style> 
 
 
 

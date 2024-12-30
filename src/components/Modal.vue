@@ -1,4 +1,4 @@
-<template>
+ <!-- <template>
   <b-modal :visible="isModalVisible" @update:visible="handleModalVisibility" aria-labelledby="modal-title" size="xl">
     <h5 class="Zoho-modal-title" id="modal-title">Receipt History for {{ customer.refNumber }}</h5>
 
@@ -140,19 +140,132 @@ export default {
     };
   }
 };
-</script> 
+</script>  -->
+
+<template>
+  <b-modal 
+    v-model="showModal" 
+    size="xl" 
+    title="Receipt History"
+    @hidden="closeModal"
+  >
+    <h5 class="Zoho-modal-title">Receipt History for {{ selectedCustomer?.refNumber }}</h5>
+    <Alert 
+      v-if="alert.show" 
+      :message="alert.message" 
+      :type="alert.type" 
+      :duration="1900"
+    />
+    <b-table 
+      v-if="receipts && receipts.length > 0"
+      :items="receipts" 
+      :fields="fields" 
+      bordered 
+      hover 
+      class="Zoho-tables"
+    >
+      <template #cell(resync)="data">
+        <b-button 
+          variant="success" 
+          @click="syncReceipt(data.item)"
+        >
+          Sync
+        </b-button>
+      </template>
+    </b-table>
+
+    <div v-else>
+      <p class="text-center">No receipts found for this customer.</p>
+    </div>
+  </b-modal>
+</template>
+
+<script>
+import { useMainStore } from '../stores/mainStore';
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
+import Alert from './Alert.vue';
+export default {
+  components: {
+    Alert
+  },
+
+  setup() {
+    const store = useMainStore();
+    const { selectedCustomer, receipts, showModal } = storeToRefs(store);
+    const alert = ref({ show: false, message: '', type: 'success' });
+    const fields = [
+      { key: 'receiptNumber', label: 'Receipt Number' },
+      { key: 'receiptDate', label: 'Receipt Date' },
+      { key: 'message', label: 'Message' },
+      { key: 'resync', label: 'Resync' }
+    ];
+
+    const closeModal = () => {
+      store.setShowModal(false);
+      store.setSelectedCustomer(null);
+    };
+
+    const syncReceipt = async (receipt) => {
+      try {
+        const token = import.meta.env.VITE_API_BEARER_TOKEN;
+        const response = await axios.post(
+          `${import.meta.env.VITE_APP_API_SYNC_RECEIPTS}`,
+          {
+            referenceNumber: receipt.receiptNumber,
+            workshopId: selectedCustomer.value.workshopId
+          },
+          {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }
+        );
+
+        if (response.data.success) {
+          store.removeReceipt(receipt);
+          alert.value = {
+            show: true,
+            message: 'Receipt synced successfully!',
+            type: 'success'
+          };
+        }
+      } catch (error) {
+        console.error('Error syncing receipt:', error);
+        alert.value = {
+          show: true,
+          message: 'Failed to sync receipt. Please try again.',
+          type: 'error'
+        };
+      }
+    };
 
 
+    return {
+      selectedCustomer,
+      receipts,
+      showModal,
+      fields,
+      closeModal,
+      syncReceipt,
+      alert,
+    };
+  }
+};
+</script>
 
+<style scoped>
+.Zoho-modal-title {
+  text-align: center;
+  margin-bottom: 1rem;
+}
 
-<style>
 .Zoho-tables {
   user-select: none;
 }
-
-#Zoho-receipt {
-  text-align: center;
-}
 </style>
+
+
+
+
+
 
 

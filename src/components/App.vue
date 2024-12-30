@@ -1,4 +1,4 @@
-<template> 
+ <template> 
   <div id="app" class="Zoho-container">
   <div> 
       <Filters 
@@ -332,13 +332,7 @@ const removeReceipt = (receipt) => {
     };
   },
 };
-</script>   
-
-
-
-
-
-
+</script>    
 
 
 <style scoped>
@@ -355,5 +349,13 @@ const removeReceipt = (receipt) => {
 }
 
 </style>
+
+  
+
+
+
+
+
+
 
 

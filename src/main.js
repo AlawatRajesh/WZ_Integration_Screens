@@ -12,7 +12,6 @@ import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';  // Correct BootstrapVu
 import  Alert  from './components/Alert.vue';
 
 
-
 const app = createApp(App);
 
 app.component('BModal', BModal);

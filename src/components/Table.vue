@@ -1,4 +1,4 @@
- <template>
+  <template>
   <div>
     <Alert v-if="apiMessage" :message="apiMessage" :type="alertType" :duration="1900" />
     <div v-if="apiMessage">
@@ -121,36 +121,4 @@ export default {
 
 
 
-
-
-
-
-<style>
-table tbody tr:hover {
-  background-color: #e9ecef;
-  cursor: pointer;
-  
-}
-table thead, table tbody tr {
-  display: table;         
-  width: 100%;            
-  table-layout: fixed; 
-  text-align: center;   
-}
-
-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-td {
-  background-color: #fff;
-}
-table tbody {
-  display: block;        
-  max-height: 250px;  
-  overflow-y: auto;
-  scrollbar-width: thin; 
- 
-}
-
-</style>
 
