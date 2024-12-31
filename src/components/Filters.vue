@@ -1,6 +1,7 @@
 <template>
   <div class="Zoho-filters-container">
-    <b-form-select v-model="selectedBranchId"
+    <b-form-select 
+      v-model="selectedBranchId"
       @change="onBranchChanged"
       class="Zoho-branch-dropdown custom-dropdown">
       <option value="">Select Branch</option>
@@ -18,20 +19,19 @@
         placeholder="Select or search for a workshop"
         :multiple="true"
         :taggable="true"
-       
         :loading="loadingWorkshops"
         @select="selectWorkshop"
-        @remove="deselectWorkshop"   
+        @remove="deselectWorkshop"
       />
     </div>
 
-    <div v-if="selectedWorkshopId" class="Zoho-customer-count">
-      <p>Customer Count: {{ customers.length  }}</p>
+    <div v-if="selectedWorkshops.length" class="Zoho-customer-count">
+      <p>Customer Count: {{ customerCount }}</p>
     </div>
 
-    <div v-if="selectedWorkshopId" class="Zoho-filter-controls">
+    <div v-if="selectedWorkshops.length" class="Zoho-filter-controls">
       <b-form-input 
-        v-model="customerSearchQuery"  
+        v-model="customerSearchQuery"
         placeholder="Search customers"
         @input="debouncedFilterCustomers"
         class="Zoho-search-bar"
@@ -45,9 +45,8 @@
       </b-form-select>
     </div>
   </div>
- 
+</template>
 
-</template> 
 <script>
 import { ref, computed } from 'vue';
 import { debounce } from 'lodash';
@@ -60,26 +59,50 @@ export default {
     Multiselect
   },
   props: {
-    branches: Array,
-    workshops: Array,
-    customers: Array,
-    selectedBranchId: [Number, String],
-    selectedWorkshopId: [Number,Array],
-    searchQuery: String,  
-    dateFilter: String,
+    branches: {
+      type: Array,
+      required: true
+    },
+    workshops: {
+      type: Array,
+      required: true
+    },
+    customers: {
+      type: Array,
+      required: true
+    },
+    selectedBranchId: {
+      type: [Number, String],
+      default: ''
+    },
+    selectedWorkshops: {
+      type: Array,
+      default: () => []
+    },
+    searchQuery: {
+      type: String,
+      default: ''
+    },
+    dateFilter: {
+      type: String,
+      default: 'all'
+    },
   },
-  emits: ['update:selectedBranchId', 'update:selectedWorkshopId', 'update:searchQuery', 
-    'update:dateFilter', 'workshop-selected','workshop-deselected'],
-  
+  emits: [
+    'update:selectedBranchId', 
+    'update:selectedWorkshops', 
+    'update:searchQuery', 
+    'update:dateFilter', 
+    'workshop-selected',
+    'workshop-deselected'
+  ],
   setup(props, { emit }) {
     const selectedBranchId = ref(props.selectedBranchId);
-    const selectedWorkshopId = ref(props.selectedWorkshopId);
-    const selectedWorkshops = ref([]);  
-    const workshopSearchQuery = ref('');  
-    const customerSearchQuery = ref('');  
+    const selectedWorkshops = ref(props.selectedWorkshops);
+    const workshopSearchQuery = ref('');
+    const customerSearchQuery = ref(props.searchQuery);
     const dateFilter = ref(props.dateFilter);
-    const isOpen = ref(false);  
-    const loadingWorkshops = ref(false);  
+    const loadingWorkshops = ref(false);
 
     const filteredWorkshops = computed(() => {
       if (!props.workshops) return [];
@@ -89,44 +112,53 @@ export default {
       });
     });
 
+    
     const selectWorkshop = (workshop) => {
       emit('workshop-selected', workshop.id);
-      selectedWorkshopId.value = workshop.id;
-    };
+      emit('update:selectedWorkshops', selectedWorkshops.value);
+      const isSelected = selectedWorkshops.value.some(selected => selected.id === workshop.id);
+  if (!isSelected) {
+   
+    selectedWorkshops.value.push(workshop);
+    
+  }
+}
     const deselectWorkshop = (workshop) => {
-      emit('workshop-deselected', workshop.id);  
-    };
+      // const index = selectedWorkshops.value.findIndex(w => w.id === workshop.id);
+      emit('update:selectedWorkshops', selectedWorkshops.value);
+      emit('workshop-deselected', workshop.id);
 
+    };
 
     const filteredCustomers = computed(() => {
       if (!props.customers) return [];
       return props.customers.filter(customer => {
         return (
-          (!selectedWorkshopId.value || customer.workshopId === selectedWorkshopId.value) &&
-          customer.refNumber.toString().includes(customerSearchQuery.value)  
+          (!selectedWorkshops.value.length || selectedWorkshops.value.some(w => w.id === customer.workshopId)) &&
+          customer.refNumber.toString().includes(customerSearchQuery.value)
         );
       });
     });
     
+   
     const customerCount = computed(() => filteredCustomers.value.length);
 
     const debouncedFilterCustomers = debounce(() => {
-      emit('update:searchQuery', customerSearchQuery.value);  
+      emit('update:searchQuery', customerSearchQuery.value);
     }, 300);
 
     const onBranchChanged = () => {
       emit('update:selectedBranchId', selectedBranchId.value);
-      selectedWorkshopId.value = '';  
+      selectedWorkshops.value = [];
+      emit('update:selectedWorkshops', []);
     };
 
     const filterCustomers = () => {
       emit('update:dateFilter', dateFilter.value);
     };
 
-
     return {
       selectedBranchId,
-      selectedWorkshopId,
       selectedWorkshops,
       workshopSearchQuery,
       customerSearchQuery,
@@ -140,13 +172,21 @@ export default {
       selectWorkshop,
       loadingWorkshops,
       deselectWorkshop,
-     
-     
-      
     };
   }
 };
-</script>     
+</script> 
+
+
+
+
+
+
+
+   
+
+
+
 
 
 
@@ -253,6 +293,7 @@ export default {
 
 
 </style> 
+
 
 
 
