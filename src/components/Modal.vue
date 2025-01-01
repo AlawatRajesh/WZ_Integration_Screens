@@ -3,7 +3,9 @@
     <h5 class="Zoho-modal-title" id="modal-title">Receipt History for {{ customer.refNumber }}</h5>
 
     <Alert v-if="errorMessage" :message="errorMessage" :type="errorType" :duration="1900" />
-
+    <div v-if="modalloading" class="spinner-container">
+        <div class="spinner"></div>
+      </div>
     <b-table :items="paginatedReceipts" :fields="fields" bordered hover class="Zoho-tables">
       <template v-slot:cell(resync)="data">
         <b-button variant="success" @click="syncReceipt(data.item)" :disabled="false">Sync</b-button>
@@ -51,7 +53,11 @@ export default {
     receipt:{
       type:Array,
       required:true,
-    }
+    },
+    modalloading: {   
+    type: Boolean,
+    default: false
+  }
   },
 
   setup(props, { emit }) {
@@ -151,6 +157,28 @@ export default {
 
 .Zoho-tables {
   user-select: none;
+}
+.spinner {
+  border: 8px solid #f3f3f3; 
+  border-top: 8px solid #3498db; 
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+  margin: 20px auto;
+  display: block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
 }
 </style>
 

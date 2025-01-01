@@ -31,13 +31,17 @@
                 :current-page="customerCurrentPage"
                 @page-changed="onCustomerPageChanged" />
             </div>
+           
+         
             <modal-component v-if="showModal"
               :customer="selectedCustomer"
               :receipts="receipts"
               :receipt="receiptNumber"
               @close="closeModal"
+              :modalloading="modalloading" 
               @sync-success="removeReceipt"
               @click-outside="handleOutsideClick" />
+          
           </div>
         </div>
       </template>
@@ -78,6 +82,7 @@
           const receipts = ref([]);
           const referenceNumber = ref([]);
           const loading = ref(false);
+          const modalloading = ref(false);
       
           const fetchWorkshops = async () => {
             if (!selectedBranchId.value) {
@@ -230,8 +235,10 @@
             } else {
               selectedCustomer.value = customer;
               showModal.value = true;
+              modalloading.value = true;
             }
             try {
+              
               const token = import.meta.env.VITE_API_BEARER_TOKEN;
               const response = await axios.get(import.meta.env.VITE_APP_API_RECEIPT, {
                 headers: {
@@ -243,12 +250,15 @@
                 },
               });
               const apiData = response.data.data;
+            
               receipts.value = apiData.map(receipt => ({
                 receiptNumber: receipt.receiptNumber,
                 receiptDate: receipt.receiptDate,
                 message: receipt.message,
               }));
+              modalloading.value = false;
             } catch (error) {
+              modalloading.value = false;
               console.error('Error fetching data:', error.response ? error.response.data : error.message);
             }
           };
@@ -319,7 +329,8 @@
             customerCount,
             handleWorkshopSelected,
             handleWorkshopDeselected,
-            loading
+            loading,
+            modalloading
           };
         },
       };
