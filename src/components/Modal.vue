@@ -3,65 +3,72 @@
     <h5 class="Zoho-modal-title" id="modal-title">Receipt History for {{ customer.refNumber }}</h5>
 
     <Alert v-if="errorMessage" :message="errorMessage" :type="errorType" :duration="1900" />
-    <div v-if="modalloading" class="spinner-container">
-        <div class="spinner"></div>
-      </div>
-    <b-table :items="paginatedReceipts" :fields="fields" bordered hover class="Zoho-tables">
+
+    <b-table :items="paginatedReceipts" :fields="fields" bordered hover class="Zoho-tables" :busy="modalloading">
       <template v-slot:cell(resync)="data">
         <b-button variant="success" @click="syncReceipt(data.item)" :disabled="false">Sync</b-button>
       </template>
+
+      <template v-slot:table-busy>
+        <div class="spinner-container">
+          <b-spinner variant="primary" label="Loading..."></b-spinner>
+        </div>
+      </template>
     </b-table>
 
-    <div v-if="!receipts || receipts.length === 0">
+    <div v-if="!modalloading && (!receipts || receipts.length === 0)">
       <p id="Zoho-receipt"> No receipts found for this customer.</p>
     </div>
 
     <Pagination v-if="customer && receipts && receipts.length > 0"
       :total-items="receipts.length" :items-per-page="itemsPerPage" :current-page="receiptCurrentPage"
       @page-changed="onReceiptPageChanged" />
-     
   </b-modal>
 </template>
 
 <script>
-import { ref, computed } from 'vue'; 
+import { ref, computed } from 'vue';
+import { BSpinner, BTable, BButton, BModal } from 'bootstrap-vue-next';
 import axios from 'axios';
-import Alert from './Alert.vue'; 
+import Alert from './Alert.vue';
 
 export default {
   name: 'Modal',
   components: {
-    Alert
+    Alert,
+    BSpinner,
+    BTable,
+    BButton,
+    BModal,
   },
   props: {
     customer: {
       type: Object,
-      required: true
+      required: true,
     },
     isModalVisible: {
       type: Boolean,
-      default: true
+      default: true,
     },
     receipts: {
       type: Array,
-      required: true
+      required: true,
     },
-    workshopId:{
-      type:String,
-      required:true,
+    workshopId: {
+      type: String,
+      required: true,
     },
-    receipt:{
-      type:Array,
-      required:true,
+    receipt: {
+      type: Array,
+      required: true,
     },
-    modalloading: {   
-    type: Boolean,
-    default: false
-  }
+    modalloading: {
+      type: Boolean,
+      default: false,
+    },
   },
-
   setup(props, { emit }) {
-    const errorMessage = ref(null); 
+    const errorMessage = ref(null);
     const receiptCurrentPage = ref(1);
     const itemsPerPage = ref(10);
     const errorType = ref('error');
@@ -69,7 +76,7 @@ export default {
       { key: 'receiptDate', label: 'Receipt Date' },
       { key: 'message', label: 'Message' },
       { key: 'receiptNumber', label: 'Receipt No' },
-      { key: 'resync', label: 'Resync' }
+      { key: 'resync', label: 'Resync' },
     ];
 
     const paginatedReceipts = computed(() => {
@@ -90,48 +97,40 @@ export default {
     };
 
     const syncReceipt = async (receipt) => {
-  errorMessage.value = null;
-  errorType.value = null;
+      errorMessage.value = null;
+      errorType.value = null;
 
-  try {
-    const token = import.meta.env.VITE_API_BEARER_TOKEN;
-    if (!token) {
-      console.error('No token found in .env file');
-      return;
-    }
-
-    const response = await axios.post(
-      `${import.meta.env.VITE_APP_API_SYNC_RECEIPTS}?referenceNumber=${receipt.receiptNumber}&workshopId=${props.customer.workshopId}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      try {
+        const token = import.meta.env.VITE_API_BEARER_TOKEN;
+        if (!token) {
+          console.error('No token found in .env file');
+          return;
         }
+
+        const response = await axios.post(
+          `${import.meta.env.VITE_APP_API_SYNC_RECEIPTS}?referenceNumber=${receipt.receiptNumber}&workshopId=${props.customer.workshopId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.ERROR) {
+          errorMessage.value = `Sync failed!\n\nERROR: ${response.data.ERROR}`;
+          errorType.value = 'success';
+          emit('sync-success', receipt);
+        } else {
+          errorMessage.value = 'Sync Failed!';
+          errorType.value = 'danger';
+        }
+      } catch (error) {
+        console.error('Error syncing customer:', error);
+        errorMessage.value = `Sync failed!\n\nERROR: ${error.message}`;
+        errorType.value = 'danger';
+        emit('sync-success', receipt);
       }
-    );
-
-    
-    if (response.data.ERROR) {
-      errorMessage.value = `Sync failed!\n\nERROR: ${response.data.ERROR}`;
-      errorType.value = 'success';  
-
-     
-      emit('sync-success', receipt);
-    } else {
-      
-      errorMessage.value = 'Sync Failed!';
-      errorType.value = 'danger';  
-    }
-
-  } catch (error) {
-    console.error('Error syncing customer:', error);
-    errorMessage.value = `Sync failed!\n\nERROR: ${error.message}`;
-    errorType.value = 'danger';  
-
-    
-    emit('sync-success', receipt);
-  }
-};
-
+    };
 
     return {
       errorMessage,
@@ -142,12 +141,11 @@ export default {
       paginatedReceipts,
       handleModalVisibility,
       onReceiptPageChanged,
-      syncReceipt
+      syncReceipt,
     };
-  }
+  },
 };
-</script>  
-
+</script>
 
 <style scoped>
 .Zoho-modal-title {
@@ -158,32 +156,14 @@ export default {
 .Zoho-tables {
   user-select: none;
 }
-.spinner {
-  border: 8px solid #f3f3f3; 
-  border-top: 8px solid #3498db; 
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 2s linear infinite;
-  margin: 20px auto;
-  display: block;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
 
 .spinner-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; 
+  padding: 1rem;
 }
 </style>
-
-
-
 
 
 
