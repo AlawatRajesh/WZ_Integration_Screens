@@ -4,8 +4,8 @@
       v-model="selectedBranchId"
       @change="onBranchChanged"
       class="Zoho-branch-dropdown custom-dropdown">
-      <option value="">Select Branch</option>
-      <option v-for="branch in branches" :key="branch.id" :value="branch.id">
+      <option value="">Select organisation</option>
+      <option v-for="branch in branches" :key="branch.organisationId" :value="branch.organisationId">
         {{ branch.name }}
       </option>
     </b-form-select>
@@ -14,7 +14,7 @@
       <Multiselect
         v-model="selectedWorkshops"
         :options="filteredWorkshops"
-        label="name"
+        label="branchName"
         track-by="id"
         placeholder="Select or search for a workshop"
         :multiple="true"
@@ -107,27 +107,24 @@ export default {
     const filteredWorkshops = computed(() => {
       if (!props.workshops) return [];
       return props.workshops.filter(workshop => {
+        const matchesBranch = workshop.organisationId === selectedBranchId.value;
         const matchesSearch = !workshopSearchQuery.value || workshop.name.toLowerCase().includes(workshopSearchQuery.value.toLowerCase());
-        return matchesSearch;
+        return matchesBranch && matchesSearch;
       });
     });
 
-    
     const selectWorkshop = (workshop) => {
       emit('workshop-selected', workshop.id);
       emit('update:selectedWorkshops', selectedWorkshops.value);
       const isSelected = selectedWorkshops.value.some(selected => selected.id === workshop.id);
-  if (!isSelected) {
-   
-    selectedWorkshops.value.push(workshop);
-    
-  }
-}
+      if (!isSelected) {
+        selectedWorkshops.value.push(workshop);
+      }
+    };
+
     const deselectWorkshop = (workshop) => {
-      // const index = selectedWorkshops.value.findIndex(w => w.id === workshop.id);
       emit('update:selectedWorkshops', selectedWorkshops.value);
       emit('workshop-deselected', workshop.id);
-
     };
 
     const filteredCustomers = computed(() => {
@@ -139,8 +136,7 @@ export default {
         );
       });
     });
-    
-   
+
     const customerCount = computed(() => filteredCustomers.value.length);
 
     const debouncedFilterCustomers = debounce(() => {
@@ -175,13 +171,7 @@ export default {
     };
   }
 };
-</script> 
-
-
-
-
-
-
+</script>   
 
    
 

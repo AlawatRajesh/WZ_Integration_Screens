@@ -1,4 +1,3 @@
-
  <template>
   <div>
     <Alert v-if="apiMessage" :message="apiMessage" :type="alertType" :duration="1900" />
@@ -103,6 +102,7 @@ export default {
       this.alertType = '';
       this.syncingAlert = true; 
       this.syncInProgress = true;
+      
 
       try {
         const token = import.meta.env.VITE_API_BEARER_TOKEN;

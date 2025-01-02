@@ -61,12 +61,7 @@ export default {
     Filters,
   },
   setup() {
-    const branches = ref([
-      { id: 1, name: 'Branch A' },
-      { id: 2, name: 'Branch B' },
-      { id: 3, name: 'Branch C' },
-      { id: 4, name: 'Branch D' }
-    ]);
+    const branches = ref([]);
     const workshops = ref([]);
     const customers = ref([]);
     const selectedBranchId = ref("");
@@ -82,6 +77,44 @@ export default {
     const loading = ref(false);
     const modalloading = ref(false);
 
+    
+    const fetchBranches = async () => {
+  try {
+    const token = import.meta.env.VITE_API_BEARER_TOKEN;
+    if (!token) {
+      console.error('No token found in .env file');
+      return;
+    }
+    const response = await axios.get(import.meta.env.VITE_APP_API_URL, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const apiData = response.data.data;
+    if (apiData) {
+      const uniqueBranches = [];
+      const organisationIds = new Set();
+
+      apiData.forEach(branch => {
+        if (!organisationIds.has(branch.organisationId)) {
+          organisationIds.add(branch.organisationId);
+          uniqueBranches.push({
+            branchId: branch.branchId,
+            branchName: branch.branchName,
+            organisationId: branch.organisationId,
+            name: branch.name,
+          });
+        }
+      });
+
+      branches.value = uniqueBranches;
+    }
+  } catch (error) {
+    console.error('Error fetching branches:', error);
+  }
+};
+
+    
     const fetchWorkshops = async () => {
       if (!selectedBranchId.value) {
         workshops.value = [];
@@ -103,6 +136,10 @@ export default {
           workshops.value = apiData.map(workshop => ({
             id: workshop.workshopId,
             name: workshop.name,
+            branchId: workshop.branchId,
+            branchName: workshop.branchName,
+            organisationId:workshop.organisationId,
+            
           }));
         }
       } catch (error) {
@@ -294,6 +331,7 @@ export default {
 
     onMounted(() => {
       fetchWorkshops();
+      fetchBranches();
     });
 
     return {
@@ -332,7 +370,12 @@ export default {
     };
   },
 };
-</script>
+</script>  
+
+
+
+
+
 
 <style scoped>
 .Zoho-container {
